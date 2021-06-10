@@ -1,7 +1,6 @@
 import gdown
 import zipfile
 import os.path
-import logging
 
 
 class MakeDataset():
