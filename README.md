@@ -1,7 +1,7 @@
 fish_classifier
 ==============================
 
-A neural network fish classifier using a large-scale dataset for fish segmentation and classification
+A neural network fish classifier using a large-scale dataset for fish segmentation and classification. I just added this period.
 
 Project Organization
 ------------
