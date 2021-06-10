@@ -1,6 +1,7 @@
 import gdown
 import zipfile
 import os.path
+import logging
 
 
 class MakeDataset():
@@ -22,7 +23,8 @@ class MakeDataset():
         super().__init__()
         self.file_url = file_url
         self.force_download = force_download
-        self.raw_zip_file = './data/raw/raw.zip'
+        self.raw_zip_folder = './data/raw/'
+        self.raw_zip_file = self.raw_zip_folder + 'raw.zip'
 
     def make_dataset(self):
         self.download_data()
@@ -36,9 +38,12 @@ class MakeDataset():
             gdown.download(self.file_url,
                            self.raw_zip_file,
                            quiet=False)
+        print('Data successfully downloaded')
+                
 
     def unzip_data(self):
-        """ Unzips the data from Google Drive """
+        """ Unzips the raw data zip file """
 
         with zipfile.ZipFile(self.raw_zip_file, 'r') as zip_ref:
-            zip_ref.extractall('./data/raw/')
+            zip_ref.extractall(self.raw_zip_folder)
+        print('Data successfully unzipped')
