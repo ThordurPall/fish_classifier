@@ -47,3 +47,6 @@ class MakeDataset():
         with zipfile.ZipFile(self.raw_zip_file, 'r') as zip_ref:
             zip_ref.extractall(self.raw_zip_folder)
         print('Data successfully unzipped')
+
+    def process_data(self):
+        
