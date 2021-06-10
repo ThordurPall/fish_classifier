@@ -15,8 +15,8 @@ def main():
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
-    make_data = MakeDataset('https://drive.google.com/uc?id=1tizpUTk8ALWVr6eGVeOW69z1MVwOMF6F')
-    make_data.download_unzip_data()
+    make_data = MakeDataset()
+    make_data.make_dataset()
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

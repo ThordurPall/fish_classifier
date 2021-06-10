@@ -1,6 +1,7 @@
 import gdown
 import zipfile
-from pathlib import Path
+import os.path
+
 
 class MakeDataset():
     """
@@ -15,21 +16,29 @@ class MakeDataset():
         Downloads the data from Google Drive and unzips it
     """
 
-    def __init__(self, file_url):
+    def __init__(self,
+                 file_url='https://drive.google.com/uc?id=1-xcm54SpglbyFvqEbipEqrmH3GAoNa8R',
+                 force_download=False):
         super().__init__()
         self.file_url = file_url
+        self.force_download = force_download
+        self.raw_zip_file = './data/raw/raw.zip'
 
+    def make_dataset(self):
+        self.download_data()
+        self.unzip_data()
 
-    def download_unzip_data(self):
-        """ Downloads the data from Google Drive and unzips it """
+    def download_data(self):
+        """ Downloads the data from Google Drive """
 
-        project_dir = Path(__file__).resolve().parents[2]
-        print(project_dir)
-        gdown.download(self.file_url,
-                       './data/raw/raw.zip',
-                       quiet=False)
-        #with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
-        #    zip_ref.extractall(directory_to_extract_to)
-        #!unzip ./horse2zebra.zip > /dev/null
-        # TEST
-        # Test 2
+        # Check if the file already exists
+        if not os.path.isfile(self.raw_zip_file) or self.force_download:
+            gdown.download(self.file_url,
+                           self.raw_zip_file,
+                           quiet=False)
+
+    def unzip_data(self):
+        """ Unzips the data from Google Drive """
+
+        with zipfile.ZipFile(self.raw_zip_file, 'r') as zip_ref:
+            zip_ref.extractall('./data/raw/')
