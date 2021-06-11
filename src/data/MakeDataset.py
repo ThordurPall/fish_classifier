@@ -143,6 +143,7 @@ class MakeDataset():
                 torch.save((images_for_training_as_tensor, labels_for_training_as_tensor), self.processed_training_set)
                 torch.save((images_for_testing_as_tensor, labels_for_testing_as_tensor), self.processed_test_set)
                 torch.save(unique_labels, self.processed_labels)
+                
                 print('Finished processing the data')
             else:
                 print('No data to process')
