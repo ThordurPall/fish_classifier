@@ -3,13 +3,14 @@ import zipfile
 from pathlib import Path
 import os
 import matplotlib.pyplot as plt
-import kornia.augmentation as K
 import torch.nn as nn
 import torch
+import kornia
+import kornia.augmentation as K
 from PIL import Image
 import torchvision.transforms as transforms
 import numpy as np
-import kornia
+
 
 class MakeDataset():
     """
