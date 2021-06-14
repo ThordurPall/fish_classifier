@@ -8,15 +8,22 @@ from src.data.MakeDataset import MakeDataset
 
 
 @click.command()
-#@click.argument('input_filepath', type=click.Path())
-#@click.argument('output_filepath', type=click.Path())
-def main():
+@click.option('-fu', '--force_unzip', type=bool, default=False,
+              help='Force unzip of the data')
+@click.option('-fd', '--force_download', type=bool, default=False,
+              help='Force download of the data')
+@click.option('-fp', '--force_process', type=bool, default=False,
+              help='Force process of the data')
+def main(force_unzip, force_download, force_process):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
-    make_data = MakeDataset()
+    make_data = MakeDataset(force_process=force_process,
+                            force_download=force_download,
+                            force_unzip=force_unzip,
+                            image_size=128)
     make_data.make_dataset()
 
 if __name__ == '__main__':
