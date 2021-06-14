@@ -34,7 +34,7 @@ class MakeDataset():
                  force_unzip=False,
                  force_process=False,
                  training_partition_percentage=0.85,
-                 generated_images_per_image=3):
+                 generated_images_per_image=3, image_size=128):
         super().__init__()
         project_dir = Path(__file__).resolve().parents[2]
         self.file_url = file_url
@@ -51,8 +51,8 @@ class MakeDataset():
         self.raw_files_folder = str(project_dir) + '/data/raw'
         self.training_partition_percentage = training_partition_percentage
         self.generated_images_per_image = generated_images_per_image
-        self.image_size_x = 128
-        self.image_size_y = 128
+        self.image_size_x = image_size
+        self.image_size_y = image_size
 
         # Make folders if they do not exist
         if not os.path.isdir(self.data_folder):

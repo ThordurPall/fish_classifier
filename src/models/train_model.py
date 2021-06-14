@@ -1,7 +1,9 @@
+import os
 import json
 import logging
 import pickle
 from pathlib import Path
+from azureml.core import Run
 
 import matplotlib.pyplot as plt
 import torch
@@ -10,6 +12,7 @@ from torch.utils.data import random_split
 
 from src.models.Classifier import Classifier
 from src.models.NeuralNetworkModel import NeuralNetworkModel
+from src.data.MakeDataset import MakeDataset
 
 
 def train_model(trained_model_filepath,
@@ -23,12 +26,21 @@ def train_model(trained_model_filepath,
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    if use_azure:
+        make_data = MakeDataset(generated_images_per_image=1, image_size=12)
+        make_data.make_dataset()
+        print('Dataset created')
+
+        # Get the experiment run context. That is, retrieve the experiment
+        # run context when the script is run
+        run = Run.get_context()
+        run.log('Learning rate',  learning_rate)
+        run.log('Epochs',  epochs)
+
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=log_fmt)
     logger = logging.getLogger(__name__)
     logger.info('Training a fish classifier')
-
-
 
     project_dir = Path(__file__).resolve().parents[2]
     train_set_path = str(project_dir) + '/data/processed/training.pt'
@@ -65,8 +77,8 @@ def train_model(trained_model_filepath,
     fc_2 = 84 
     pad = 0
     stride = 1 
-    lr = 0.001
-    epochs = 30
+    lr = learning_rate
+    epochs = epochs
     
 
     trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
@@ -82,8 +94,8 @@ def train_model(trained_model_filepath,
     print('Labels shape',labels.shape)
     
     
-    #model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
-    model = NeuralNetworkModel()
+    model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
+    #model = NeuralNetworkModel()
 
     # Transfering the model to GPU if available
     model = model.to(device)
@@ -160,9 +172,36 @@ def train_model(trained_model_filepath,
                         str("Validation Loss: {:.3f}.. ".format(val_losses[-1]))         +
                         str("Validation Accuracy: {:.3f}.. ".format(val_accuracies[-1])))
 
+    # Set file paths depending on running locally or on Azure
+    model_path = project_dir.joinpath(trained_model_filepath)
+    dict_path = project_dir.joinpath(training_statistics_filepath).joinpath('train_val_dict.pickle')
+    l_fig_path = project_dir.joinpath(training_figures_filepath).joinpath('Training_Loss.pdf')
+    a_fig_path = project_dir.joinpath(training_figures_filepath).joinpath('Training_Accuracy.pdf')
+    
+    if use_azure:
+        # Update model path and make sure it exists
+        os.makedirs('./outputs', exist_ok=True)
+        model_path = './outputs/' + trained_model_filepath
+        os.makedirs(os.path.dirname(model_path), exist_ok=True)
+
+        # Update dictionary path
+        dict_path = './outputs/' + training_statistics_filepath + 'train_val_dict.pickle'
+        os.makedirs(os.path.dirname(dict_path), exist_ok=True)
+
+        # Update figure paths
+        figures_path = './outputs/' + training_figures_filepath
+        os.makedirs(figures_path, exist_ok=True)
+        l_fig_path = figures_path + 'Training_Loss.pdf'
+        a_fig_path = figures_path + 'Training_Accuracy.pdf'
+        
+        # Log the training and validation losses and accuracies
+        run.log_list('Train loss', train_losses)
+        run.log_list('Train accuracy', train_accuracies)
+        run.log_list('Validation loss', val_losses)
+        run.log_list('Validation accuracy', val_accuracies)
+
     # Save the trained network
-    torch.save(model.state_dict(),
-               project_dir.joinpath(trained_model_filepath))
+    torch.save(model.state_dict(), model_path)
 
     # Save the training and validation losses and accuracies as a dictionary
     train_val_dict = {
@@ -171,8 +210,8 @@ def train_model(trained_model_filepath,
         "val_losses": val_losses,
         "val_accuracies": val_accuracies
     }
-
-    with open(project_dir.joinpath(training_statistics_filepath).joinpath('train_val_dict.pickle'), 'wb') as f:
+    
+    with open(dict_path, 'wb') as f:
         # Pickle the 'train_val_dict' dictionary using
         #  the highest protocol available
         pickle.dump(train_val_dict, f, pickle.HIGHEST_PROTOCOL)
@@ -184,8 +223,9 @@ def train_model(trained_model_filepath,
     plt.xlabel('Epoch number')
     plt.ylabel('Loss')
     plt.legend()
-    f.savefig(project_dir.joinpath(training_figures_filepath).joinpath('Training_Loss.pdf'),
-              bbox_inches='tight')
+    if use_azure:
+        run.log_image(name='Training loss curve', plot=f)
+    f.savefig(l_fig_path, bbox_inches='tight')
 
     # Plot the training accuracy curve
     f = plt.figure(figsize=(12, 8))
@@ -194,8 +234,14 @@ def train_model(trained_model_filepath,
     plt.xlabel('Epoch number')
     plt.ylabel('Accuracy')
     plt.legend()
-    f.savefig(project_dir.joinpath(training_figures_filepath).joinpath('Training_Accuracy.pdf'),
-              bbox_inches='tight')
+    if use_azure:
+        run.log_image(name='Training accuracy curve', plot=f)
+    f.savefig(a_fig_path, bbox_inches='tight')
+
+    if use_azure:
+        # Complete the run
+        run.complete()
+        print('Completed running the training expriment')
 
     return train_val_dict
 
