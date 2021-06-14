@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import os
 import glob
+import os
+
 import torch
+
 from src.data.MakeDataset import MakeDataset
 
 
