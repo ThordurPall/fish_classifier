@@ -2,11 +2,12 @@ from pathlib import Path
 import torch
 from torch.utils.data import random_split
 from src.models.Classifier import Classifier
+from src.models.NeuralNetworkModel import NeuralNetworkModel
 from torch import nn, optim
 import matplotlib.pyplot as plt
 import pickle
 import logging
-
+import json
 
 def train_model(trained_model_filepath,
                 training_statistics_filepath, training_figures_filepath):
@@ -69,8 +70,8 @@ def train_model(trained_model_filepath,
     print('Labels shape',labels.shape)
     
     
-    model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
-    print(model)
+    #model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
+    model = NeuralNetworkModel()
     criterion = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 

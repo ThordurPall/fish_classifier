@@ -50,6 +50,8 @@ class MakeDataset():
         self.raw_files_folder = str(project_dir) + '/data/raw'
         self.training_partition_percentage = training_partition_percentage
         self.generated_images_per_image = generated_images_per_image
+        self.image_size_x = 128
+        self.image_size_y = 128
 
         # Make folders if they do not exist
         if not os.path.isdir(self.data_folder):
@@ -111,7 +113,7 @@ class MakeDataset():
 
                             # Perform some transformations on the image 
                             transform = transforms.Compose([transforms.ToTensor(),
-                                    transforms.Resize((256,256)),
+                                    transforms.Resize((self.image_size_x,self.image_size_y)),
                                     transforms.Normalize((0.5,), (0.5,))])
                             image = transform(image)
 
@@ -150,13 +152,13 @@ class MakeDataset():
                 labels_for_testing = labels_array[training_partition:]
 
                 # Convert images and labels in training set to tensors
-                images_for_training_as_tensor = torch.Tensor(len(images_for_training), 3, 256, 256)
+                images_for_training_as_tensor = torch.Tensor(len(images_for_training), 3, self.image_size_x, self.image_size_y)
                 torch.cat(images_for_training, out=images_for_training_as_tensor)
                 labels_for_training_as_tensor = torch.Tensor(len(labels_for_training), 1)
                 torch.cat(labels_for_training, out=labels_for_training_as_tensor)
 
                 # Convert images and labels in test set to tensors
-                images_for_testing_as_tensor = torch.Tensor(len(images_for_testing), 3, 256, 256)
+                images_for_testing_as_tensor = torch.Tensor(len(images_for_testing), 3, self.image_size_x, self.image_size_y)
                 torch.cat(images_for_testing, out=images_for_testing_as_tensor)
                 labels_for_testing_as_tensor = torch.Tensor(len(labels_for_testing), 1)
                 torch.cat(labels_for_testing, out=labels_for_testing_as_tensor)
