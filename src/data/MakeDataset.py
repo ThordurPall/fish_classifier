@@ -34,7 +34,7 @@ class MakeDataset():
                  force_unzip=False,
                  force_process=False,
                  training_partition_percentage=0.85,
-                 generated_images_per_image=3,
+                 generated_images_per_image=50,
                  image_size=128):
         super().__init__()
         project_dir = Path(__file__).resolve().parents[2]

@@ -23,7 +23,8 @@ def main(force_unzip, force_download, force_process):
     make_data = MakeDataset(force_process=force_process,
                             force_download=force_download,
                             force_unzip=force_unzip,
-                            image_size=128)
+                            image_size=128,
+                            generated_images_per_image=50)
     make_data.make_dataset()
 
 if __name__ == '__main__':
