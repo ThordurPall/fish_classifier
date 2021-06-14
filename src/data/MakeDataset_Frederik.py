@@ -1,15 +1,16 @@
-import gdown
-import zipfile
 import os.path
-import kornia
-import matplotlib.pyplot as plt
-import torchvision
-from torchvision import transforms
+import zipfile
 from pathlib import Path
+
+import gdown
+import kornia
 import kornia.augmentation as K
-import torch.nn as nn
+import matplotlib.pyplot as plt
 import numpy as np
+import torch.nn as nn
+import torchvision
 from PIL import Image
+from torchvision import transforms
 
 
 class MakeDataset():

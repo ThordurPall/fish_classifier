@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import click
 import logging
 from pathlib import Path
+
+import click
+
 from src.models.train_model import train_model
 
 
@@ -12,15 +14,21 @@ from src.models.train_model import train_model
                 default='data/processed/')
 @click.argument('training_figures_filepath', type=click.Path(),
                 default='reports/figures/')
+@click.argument('use_azure', type=bool, default=False)
+@click.option('-e', '--epochs', type=int, default=10,
+              help='Number of training epochs (default=10)')
+@click.option('-lr', '--learning_rate', type=float, default=0.001,
+              help='Learning rate for the PyTorch optimizer (default=0.001)')
 
 def train_model_command_line(trained_model_filepath,
                              training_statistics_filepath,
                              training_figures_filepath,
-                             ):
+                             use_azure, epochs, learning_rate):
     """ Trains the neural network using MNIST training data """
     _ = train_model(trained_model_filepath,
                     training_statistics_filepath,
-                    training_figures_filepath)
+                    training_figures_filepath,
+                    use_azure, epochs, learning_rate)
 
 if __name__ == '__main__':
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

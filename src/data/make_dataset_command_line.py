@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-import click
 import logging
 from pathlib import Path
+
+import click
+
 from src.data.MakeDataset import MakeDataset
 
 

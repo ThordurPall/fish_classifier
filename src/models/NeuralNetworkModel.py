@@ -1,5 +1,6 @@
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
+
 
 class NeuralNetworkModel(nn.Module):
     def __init__(self):

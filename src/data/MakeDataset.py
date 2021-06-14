@@ -1,17 +1,18 @@
-import gdown
+import json
+import os
+import random
 import zipfile
 from pathlib import Path
-import os
-import matplotlib.pyplot as plt
-import torch.nn as nn
-import torch
+
+import gdown
 import kornia
 import kornia.augmentation as K
-from PIL import Image
-import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
 import numpy as np
-import json
-import random
+import torch
+import torch.nn as nn
+import torchvision.transforms as transforms
+from PIL import Image
 
 
 class MakeDataset():
