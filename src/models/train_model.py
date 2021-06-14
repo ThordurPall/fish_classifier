@@ -82,8 +82,7 @@ def train_model(trained_model_filepath,
     print('Labels shape',labels.shape)
     
     
-    #model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
-    model = NeuralNetworkModel()
+    model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
 
     # Transfering the model to GPU if available
     model = model.to(device)

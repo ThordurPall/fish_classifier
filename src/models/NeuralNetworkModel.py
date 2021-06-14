@@ -5,15 +5,16 @@ from torch import nn
 class NeuralNetworkModel(nn.Module):
     def __init__(self):
         super().__init__()
+        self.input = 12288
+        self.output = 9
         # Define fully connected layers
-        self.fc1 = nn.Linear(49152, 16384)
-        self.fc2 = nn.Linear(16384, 8192)
-        self.fc3 = nn.Linear(8192, 4096)
-        self.fc4 = nn.Linear(4096, 2048)
-        self.fc5 = nn.Linear(2048, 1024)
-        self.fc6 = nn.Linear(1024, 512)
-        self.fc7 = nn.Linear(512, 128)
-        self.fc8 = nn.Linear(128,9)
+        self.fc1 = nn.Linear(self.input, int(self.input/3))
+        self.fc2 = nn.Linear(int(self.input/3), int(self.input/(3*2)))
+        self.fc3 = nn.Linear(int(self.input/(3*2)), int(self.input/(3*2*2)))
+        self.fc4 = nn.Linear(int(self.input/(3*2*2)), int(self.input/(3*2*2*2)))
+        self.fc5 = nn.Linear(int(self.input/(3*2*2*2)), int(self.input/(3*2*2*2*2)))
+        self.fc6 = nn.Linear(int(self.input/(3*2*2*2*2)), int(self.input/(3*2*2*2*2*2)))
+        self.fc7 = nn.Linear(int(self.input/(3*2*2*2*2*2)),self.output)
 
         # Dropout module with 0.2 drop probability
         self.dropout = nn.Dropout(p=0.2)
@@ -23,7 +24,6 @@ class NeuralNetworkModel(nn.Module):
 
         # Flattening input tensor except for the minibatch dimension
         x = x.view(x.shape[0], -1)
-        print(x.shape)
 
         # Fully connected layers with dropout
         x = self.dropout(F.relu(self.fc1(x)))
@@ -32,8 +32,7 @@ class NeuralNetworkModel(nn.Module):
         x = self.dropout(F.relu(self.fc4(x)))
         x = self.dropout(F.relu(self.fc5(x)))
         x = self.dropout(F.relu(self.fc6(x)))
-        x = self.dropout(F.relu(self.fc7(x)))
- 
+
         # Output so no dropout here
-        x = F.log_softmax(self.fc8(x), dim=1)
+        x = F.log_softmax(self.fc7(x), dim=1)
         return x
