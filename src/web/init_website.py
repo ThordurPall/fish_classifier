@@ -1,18 +1,21 @@
 from __future__ import unicode_literals
+
+import json
 import os
+import time
 from pathlib import Path
-from bottle import Bottle, request, response, route, static_file
-from src.models.Classifier import Classifier
-import torch
+
 import kornia
 import kornia.augmentation as K
-import json
-from PIL import Image
-import torchvision.transforms as transforms
-import numpy as np
-from resizeimage import resizeimage
 import matplotlib.pyplot as plt
-import time
+import numpy as np
+import torch
+import torchvision.transforms as transforms
+from bottle import Bottle, request, response, route, static_file
+from PIL import Image
+from resizeimage import resizeimage
+
+from src.models.Classifier import Classifier
 
 project_dir = Path(__file__).resolve().parents[2]
 mapping_file_path = str(project_dir) + '/data/processed/mapping.json'
