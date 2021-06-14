@@ -1,8 +1,10 @@
-from pathlib import Path
-import torch
 import json
+from pathlib import Path
+
 import kornia
 import matplotlib.pyplot as plt
+import torch
+
 
 def check_data():
     project_dir = Path(__file__).resolve().parents[2]
