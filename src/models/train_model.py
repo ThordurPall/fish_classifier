@@ -1,18 +1,18 @@
-import os
 import json
 import logging
+import os
 import pickle
 from pathlib import Path
-from azureml.core import Run
 
 import matplotlib.pyplot as plt
 import torch
+from azureml.core import Run
 from torch import nn, optim
 from torch.utils.data import random_split
 
+from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.NeuralNetworkModel import NeuralNetworkModel
-from src.data.MakeDataset import MakeDataset
 
 
 def train_model(trained_model_filepath,
