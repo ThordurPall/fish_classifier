@@ -91,3 +91,5 @@ target/
 # Other
 /src/web/tmp/
 /models/
+# Azure
+config.json

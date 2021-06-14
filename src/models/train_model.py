@@ -1,21 +1,33 @@
+import json
+import logging
+import pickle
 from pathlib import Path
+
+import matplotlib.pyplot as plt
 import torch
+from torch import nn, optim
 from torch.utils.data import random_split
+
 from src.models.Classifier import Classifier
 from src.models.NeuralNetworkModel import NeuralNetworkModel
-from torch import nn, optim
-import matplotlib.pyplot as plt
-import pickle
-import logging
-import json
+
 
 def train_model(trained_model_filepath,
-                training_statistics_filepath, training_figures_filepath):
+                training_statistics_filepath, training_figures_filepath,
+                use_azure=False, epochs=10, learning_rate=0.001):
+
+    # Check if there is a GPU available to use
+    if torch.cuda.is_available():
+        print("The code will run on GPU.")
+    else:
+        print("The code will run on CPU.")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=log_fmt)
     logger = logging.getLogger(__name__)
     logger.info('Training a fish classifier')
+
 
 
     project_dir = Path(__file__).resolve().parents[2]
@@ -70,7 +82,16 @@ def train_model(trained_model_filepath,
     print('Labels shape',labels.shape)
     
     
+<<<<<<< HEAD
     model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
+=======
+    #model = Classifier(num_classes, filter1_in, filter1_out, filter2_out, filter3_out,height, width, pad, stride, kernel,pool,fc_1,fc_2 )
+    model = NeuralNetworkModel()
+
+    # Transfering the model to GPU if available
+    model = model.to(device)
+
+>>>>>>> upstream/main
     criterion = nn.NLLLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
@@ -82,6 +103,9 @@ def train_model(trained_model_filepath,
         train_correct = 0
 
         for images, labels in trainloader:
+            # Transfering images and labels to GPU if available
+            images, labels = images.to(device), labels.to(device)
+
             # Set model to training mode and zero
             #  gradients since they accumulated
             model.train()
@@ -115,6 +139,9 @@ def train_model(trained_model_filepath,
             with torch.no_grad():
                 model.eval()     # Sets the model to evaluation mode
                 for images, labels in valoader:
+                    # Transfering images and labels to GPU if available
+                    images, labels = images.to(device), labels.to(device)
+
                     # Forward pass and compute loss
                     log_ps = model(images)
                     ps = torch.exp(log_ps)
@@ -176,6 +203,3 @@ def train_model(trained_model_filepath,
 
     return train_val_dict
 
-
-
-                                    
