@@ -19,16 +19,13 @@ def train_model(trained_model_filepath,
 
     project_dir = Path(__file__).resolve().parents[2]
     train_set_path = str(project_dir) + '/data/processed/training.pt'
-    labels_path = str(project_dir) + '/data/processed/labels.pt'
+    mapping_file_path = str(project_dir) + '/data/processed/mapping.json'
     train_imgs, train_labels = torch.load(train_set_path) # img, label
-    labels_as_string = torch.load(labels_path) # img, label
-    print(train_imgs[0])
-    print(labels_path)
-    print(labels_as_string)
+    mapping = {}
 
+    with open(mapping_file_path) as json_file:
+        mapping = json.load(json_file)
 
-
-    
     #load data
     train_set = torch.utils.data.TensorDataset(train_imgs, train_labels)
 
@@ -41,7 +38,7 @@ def train_model(trained_model_filepath,
 
     ##### Hyper parameters
     batch_size = 64
-    num_classes = len(labels_as_string)
+    num_classes = len(mapping)
     rgb = train_imgs.shape[1]
     height = train_imgs.shape[2]
     width  = train_imgs.shape[3]
