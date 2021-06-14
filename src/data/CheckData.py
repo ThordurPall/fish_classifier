@@ -1,10 +1,10 @@
 import json
+import random
 from pathlib import Path
 
 import kornia
 import matplotlib.pyplot as plt
 import torch
-import random
 
 
 def check_data():
