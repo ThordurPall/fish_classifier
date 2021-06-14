@@ -14,7 +14,8 @@ from src.models.train_model import train_model
                 default='data/processed/')
 @click.argument('training_figures_filepath', type=click.Path(),
                 default='reports/figures/')
-@click.argument('use_azure', type=bool, default=False)
+@click.option('-ua', '--use_azure', type=bool, default=False,
+              help='Set True to run on Azure (default=False)')
 @click.option('-e', '--epochs', type=int, default=10,
               help='Number of training epochs (default=10)')
 @click.option('-lr', '--learning_rate', type=float, default=0.001,

@@ -52,8 +52,8 @@ class MakeDataset():
         self.raw_files_folder = str(project_dir) + '/data/raw'
         self.training_partition_percentage = training_partition_percentage
         self.generated_images_per_image = generated_images_per_image
-        self.image_size_x = 128
-        self.image_size_y = 128
+        self.image_size_x = image_size
+        self.image_size_y = image_size
 
         # Make folders if they do not exist
         if not os.path.isdir(self.data_folder):
