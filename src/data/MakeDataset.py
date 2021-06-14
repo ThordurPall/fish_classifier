@@ -10,6 +10,8 @@ from PIL import Image
 import torchvision.transforms as transforms
 import numpy as np
 import kornia
+import json
+import random
 
 class MakeDataset():
     """
@@ -29,7 +31,8 @@ class MakeDataset():
                  force_download=False,
                  force_unzip=False,
                  force_process=False,
-                 training_partition_percentage=0.85):
+                 training_partition_percentage=0.85,
+                 generated_images_per_image=3):
         super().__init__()
         project_dir = Path(__file__).resolve().parents[2]
         self.file_url = file_url
@@ -42,9 +45,10 @@ class MakeDataset():
         self.processed_training_set = str(project_dir) + '/data/processed/training.pt'
         self.processed_test_set = str(project_dir) + '/data/processed/test.pt'
         self.processed_files_folder = str(project_dir) + '/data/processed'
-        self.processed_labels = str(project_dir) + '/data/processed/labels.pt'
+        self.mapping_file = str(project_dir) + '/data/processed/mapping.json'
         self.raw_files_folder = str(project_dir) + '/data/raw'
         self.training_partition_percentage = training_partition_percentage
+        self.generated_images_per_image = generated_images_per_image
 
         # Make folders if they do not exist
         if not os.path.isdir(self.data_folder):
@@ -66,6 +70,7 @@ class MakeDataset():
         # Check if the file already exists
         if not os.path.isfile(self.raw_zip_file) or force_download:
             print('Downloading data')
+            # Download the file
             gdown.download(self.file_url,
                            self.raw_zip_file,
                            quiet=False)
@@ -73,9 +78,10 @@ class MakeDataset():
 
     def unzip_data(self, force_unzip):
         """ Unzips the raw data zip file """
-
+        # Check if the folder already exists
         if not os.path.isdir(self.raw_unzipped_file_folder) or force_unzip:
             print('Unzipping data')
+            # Unzip the data
             with zipfile.ZipFile(self.raw_zip_file, 'r') as zip_ref:
                 zip_ref.extractall(self.raw_unzipped_file_folder)
             print('Data successfully unzipped')
@@ -87,7 +93,6 @@ class MakeDataset():
             (not os.path.isfile(self.processed_test_set))) or 
             force_process):
             print('Processing data')
-            show_one = 60
             images_array = []
             labels_array = []
             for root, dirs, files in os.walk(self.raw_unzipped_file_folder, topdown=True):
@@ -109,41 +114,60 @@ class MakeDataset():
                                     transforms.Normalize((0.5,), (0.5,))])
                             image = transform(image)
 
-                            # Perform kornia operations on the image
-                            self.aff = K.RandomAffine(360, return_transform=True, same_on_batch=True)
-                            self.cj = K.ColorJitter(0.2, 0.3, 0.2, 0.3)
-                            img_out, _ = self.aff(self.cj(image))
-                            
-                            # Append processed image and label to arrays
-                            images_array.append(img_out)
-                            labels_array.append(root.split('/')[len(root.split('/'))-1])
+                            # Perform augumentations on the image
+                            for _ in range(self.generated_images_per_image):
+                                # Perform kornia operations on the image
+                                self.aff = K.RandomAffine(360, return_transform=True, same_on_batch=True)
+                                self.cj = K.ColorJitter(0.2, 0.3, 0.2, 0.3)
+                                img_out, _ = self.aff(self.cj(image))
+                                
+                                # Append processed image and label to arrays
+                                images_array.append(img_out)
+                                labels_array.append(root.split('/')[len(root.split('/'))-1])
 
-            # Create tensors from image array and label array
+            # Process the data to correct data types and save the data
             if(len(images_array) != 0):
+                # Get all unique labels
                 unique_labels = list(set(labels_array))
-                labels_array = [torch.tensor([unique_labels.index(i)]) for i in labels_array]
-             
+
+                # Convert strings in labels array to integers
+                labels_array = [torch.tensor([unique_labels.index(label)]) for label in labels_array]
+                
+                # Create the mapping (integer: string)
+                mapping_dict = dict(zip([int(unique_labels.index(label)) for label in unique_labels], unique_labels))
+    
+                # Shuffle the data 
+                mapIndexPosition = list(zip(images_array, labels_array))
+                random.shuffle(mapIndexPosition)
+                images_array, labels_array = zip(*mapIndexPosition)
+
+                # Convert the data into a training set and a test set
                 training_partition = round(len(images_array)*self.training_partition_percentage)
                 images_for_training = images_array[0:training_partition]
                 labels_for_training = labels_array[0:training_partition]
                 images_for_testing = images_array[training_partition:]
                 labels_for_testing = labels_array[training_partition:]
 
-
+                # Convert images and labels in training set to tensors
                 images_for_training_as_tensor = torch.Tensor(len(images_for_training), 3, 256, 256)
                 torch.cat(images_for_training, out=images_for_training_as_tensor)
                 labels_for_training_as_tensor = torch.Tensor(len(labels_for_training), 1)
                 torch.cat(labels_for_training, out=labels_for_training_as_tensor)
 
+                # Convert images and labels in test set to tensors
                 images_for_testing_as_tensor = torch.Tensor(len(images_for_testing), 3, 256, 256)
                 torch.cat(images_for_testing, out=images_for_testing_as_tensor)
                 labels_for_testing_as_tensor = torch.Tensor(len(labels_for_testing), 1)
                 torch.cat(labels_for_testing, out=labels_for_testing_as_tensor)
 
+                # Save training and test set
                 torch.save((images_for_training_as_tensor, labels_for_training_as_tensor), self.processed_training_set)
                 torch.save((images_for_testing_as_tensor, labels_for_testing_as_tensor), self.processed_test_set)
-                torch.save(unique_labels, self.processed_labels)
-                
+
+                # Save the mapping dict
+                with open(self.mapping_file, 'w', encoding='utf-8') as f:
+                    json.dump(mapping_dict, f, ensure_ascii=False, indent=4)
+
                 print('Finished processing the data')
             else:
                 print('No data to process')

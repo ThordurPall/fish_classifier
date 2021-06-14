@@ -14,7 +14,7 @@ def main():
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
-    make_data = MakeDataset()
+    make_data = MakeDataset(force_process=True)
     make_data.make_dataset()
 
 if __name__ == '__main__':
