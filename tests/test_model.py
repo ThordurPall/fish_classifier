@@ -6,6 +6,11 @@ import torch
 
 from src.models.Classifier import Classifier
 
+# Opening the hyperparameters JSON file
+f = open('./src/hyperparameters.json',)
+
+# Return JSON object as a dictionary
+hype = json.load(f)
 
 class TestModel:
     def test_classifier(self):
@@ -15,12 +20,6 @@ class TestModel:
         is one for each input in the batch
         """
         X = 64
-
-        # Opening the hyperparameters JSON file
-        f = open('./src/hyperparameters.json',)
-        
-        # Return JSON object as a dictionary
-        hype = json.load(f)
 
         model = Classifier(hype['num_classes'],
                            hype['filter1_in'],
@@ -41,13 +40,13 @@ class TestModel:
         assert X == int(round(torch.exp(x).sum().item()))
     
     @pytest.mark.parametrize("test_input",
-                             [torch.rand(1, 2, 3, 128, 128),
-                              torch.rand(1, 128, 128),
-                              torch.rand(1, 128),
+                             [torch.rand(1, 2, 3, hype['image_height'],
+                                         hype['image_width']),
+                              torch.rand(1, hype['image_height'],
+                                         hype['image_width']),
+                              torch.rand(1, hype['image_height']),
                               torch.rand(1)])  
     def test_classifier_exception_4D(self, test_input):
-        f = open('./src/hyperparameters.json',)
-        hype = json.load(f)
         model = Classifier(hype['num_classes'],
                            hype['filter1_in'],
                            hype['filter1_out'],
