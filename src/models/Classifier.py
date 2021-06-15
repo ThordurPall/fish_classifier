@@ -66,6 +66,10 @@ class Classifier(nn.Module):
 
     def forward(self, x):
         
+        # Chack that there are batch, channel, width and height dimensions
+        if x.ndim != 4:
+            raise ValueError('Expected input to be a 4D tensor')
+        
         x = self.pool1(F.relu(self.conv1(x)))
         x = self.pool2(F.relu(self.conv2(x)))
         x = F.relu(self.conv3(x))
