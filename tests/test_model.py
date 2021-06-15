@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
+
 import pytest
 import torch
-import json
 
 from src.models.Classifier import Classifier
 
