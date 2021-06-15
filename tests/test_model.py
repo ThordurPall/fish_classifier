@@ -7,6 +7,7 @@ import torch
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
 
+
 class TestModel:
     def test_classifier(self):
         """
