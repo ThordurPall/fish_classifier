@@ -2,8 +2,6 @@
 import glob
 import os
 
-import torch
-
 from src.data.MakeDataset import MakeDataset
 
 
