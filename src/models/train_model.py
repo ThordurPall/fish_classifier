@@ -7,12 +7,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import torch
 from azureml.core import Run
-from torch import nn, optim
-from torch.utils.data import random_split
-
 from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.NeuralNetworkModel import NeuralNetworkModel
+from torch import nn, optim
+from torch.utils.data import random_split
 
 
 def train_model(
