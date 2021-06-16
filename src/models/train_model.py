@@ -71,23 +71,37 @@ def train_model(
     hype = hp().config
     lr = learning_rate
     epochs = epochs
-    
-    trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
-                                          shuffle=True, num_workers=0) #changed num_workers to 0 because i was getting error
+
+    trainloader = torch.utils.data.DataLoader(
+        train_data, batch_size=batch_size, shuffle=True, num_workers=0
+    )  # changed num_workers to 0 because i was getting error
+
+    valoader = torch.utils.data.DataLoader(
+        val_data, batch_size=batch_size, shuffle=True, num_workers=0
+    )
 
     dataiter = iter(trainloader)
     images, labels = dataiter.next()
 
-    print('Image shape', images.shape)
-    print('Labels shape', labels.shape)
+    print("Image shape", images.shape)
+    print("Labels shape", labels.shape)
 
     # Initialize the model and transfer to GPU if available
-    model = Classifier(hype['num_classes'], hype['filter1_in'],
-                       hype['filter1_out'], hype['filter2_out'],
-                       hype['filter3_out'], hype['image_height'],
-                       hype['image_width'], hype['pad'],
-                       hype['stride'], hype['kernel'], hype['pool'],
-                       hype['fc_1'], hype['fc_2'])
+    model = Classifier(
+        hype["num_classes"],
+        hype["filter1_in"],
+        hype["filter1_out"],
+        hype["filter2_out"],
+        hype["filter3_out"],
+        hype["image_height"],
+        hype["image_width"],
+        hype["pad"],
+        hype["stride"],
+        hype["kernel"],
+        hype["pool"],
+        hype["fc_1"],
+        hype["fc_2"],
+    )
     model = model.to(device)
 
     criterion = nn.NLLLoss()
@@ -244,3 +258,4 @@ def train_model(
         print("Completed running the training expriment")
 
     return train_val_dict
+
