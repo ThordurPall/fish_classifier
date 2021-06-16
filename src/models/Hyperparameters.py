@@ -18,7 +18,7 @@ class Hyperparameters:
             "pad": 0,
             "stride": 1,
             "lr": 0.001,
-            "epochs": 30,
+            "epochs": 10,
         },
     ):
         super().__init__()

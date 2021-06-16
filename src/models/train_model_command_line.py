@@ -23,27 +23,27 @@ from src.models.train_model import train_model
     default=False,
     help="Set True to run on Azure (default=False)",
 )
-@click.option(
-    "-e",
-    "--epochs",
-    type=int,
-    default=10,
-    help="Number of training epochs (default=10)",
-)
-@click.option(
-    "-lr",
-    "--learning_rate",
-    type=float,
-    default=0.001,
-    help="Learning rate for the PyTorch optimizer (default=0.001)",
-)
+# @click.option(
+#     "-e",
+#     "--epochs",
+#     type=int,
+#     default=10,
+#     help="Number of training epochs (default=10)",
+# )
+# @click.option(
+#     "-lr",
+#     "--learning_rate",
+#     type=float,
+#     default=0.001,
+#     help="Learning rate for the PyTorch optimizer (default=0.001)",
+# )
 def train_model_command_line(
     trained_model_filepath,
     training_statistics_filepath,
     training_figures_filepath,
     use_azure,
-    epochs,
-    learning_rate,
+    # epochs,
+    # learning_rate,
 ):
     """Trains the neural network using MNIST training data"""
     _ = train_model(
@@ -51,8 +51,8 @@ def train_model_command_line(
         training_statistics_filepath,
         training_figures_filepath,
         use_azure,
-        epochs,
-        learning_rate,
+        #    epochs,
+        #    learning_rate,
     )
 
 

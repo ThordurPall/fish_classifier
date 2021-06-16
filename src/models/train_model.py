@@ -20,8 +20,6 @@ def train_model(
     training_statistics_filepath,
     training_figures_filepath,
     use_azure=False,
-    epochs=10,
-    learning_rate=0.001,
 ):
 
     # Check if there is a GPU available to use
@@ -31,6 +29,9 @@ def train_model(
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    ##### Hyper parameters
+    hype = hp().config
+
     if use_azure:
         make_data = MakeDataset()
         make_data.make_dataset()
@@ -39,8 +40,8 @@ def train_model(
         # Get the experiment run context. That is, retrieve the experiment
         # run context when the script is run
         run = Run.get_context()
-        run.log("Learning rate", learning_rate)
-        run.log("Epochs", epochs)
+        run.log("Learning rate", hype["lr"])
+        run.log("Epochs", hype["epochs"])
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -66,18 +67,12 @@ def train_model(
     print(f"Length of Train Data : {len(train_data)}")
     print(f"Length of Validation Data : {len(val_data)}")
 
-    ##### Hyper parameters
-    batch_size = 64
-    hype = hp().config
-    lr = learning_rate
-    epochs = epochs
-
     trainloader = torch.utils.data.DataLoader(
-        train_data, batch_size=batch_size, shuffle=True, num_workers=0
+        train_data, batch_size=hype["batch_size"], shuffle=True, num_workers=0
     )  # changed num_workers to 0 because i was getting error
 
     valoader = torch.utils.data.DataLoader(
-        val_data, batch_size=batch_size, shuffle=True, num_workers=0
+        val_data, batch_size=hype["batch_size"], shuffle=True, num_workers=0
     )
 
     dataiter = iter(trainloader)
@@ -105,12 +100,12 @@ def train_model(
     model = model.to(device)
 
     criterion = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=hype["lr"])
 
     # Implement the training loop
     print("Start training")
     train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
-    for e in range(epochs):
+    for e in range(hype["epochs"]):
         train_loss = 0
         train_correct = 0
 
@@ -139,7 +134,7 @@ def train_model(
             optimizer.step()
 
             # Keep track of how many are correctly classified
-            top_p, top_class = ps.topk(1, dim=1)
+            _, top_class = ps.topk(1, dim=1)
             equals = top_class == labels.view(*top_class.shape)
             train_correct += equals.type(torch.FloatTensor).sum().item()
         else:
@@ -160,7 +155,7 @@ def train_model(
                     val_loss += criterion(log_ps, labels.long()).item()
 
                     # Keep track of how many are correctly classified
-                    top_p, top_class = ps.topk(1, dim=1)
+                    _, top_class = ps.topk(1, dim=1)
                     equals = top_class == labels.view(*top_class.shape)
                     val_correct += equals.type(torch.FloatTensor).sum().item()
 
@@ -171,7 +166,7 @@ def train_model(
             val_accuracies.append(val_correct / len(val_data))
 
             logger.info(
-                str("Epoch: {}/{}.. ".format(e + 1, epochs))
+                str("Epoch: {}/{}.. ".format(e + 1, hype["epochs"]))
                 + str("Training Loss: {:.3f}.. ".format(train_losses[-1]))
                 + str("Training Accuracy: {:.3f}.. ".format(train_accuracies[-1]))
                 + str("Validation Loss: {:.3f}.. ".format(val_losses[-1]))
@@ -258,4 +253,3 @@ def train_model(
         print("Completed running the training expriment")
 
     return train_val_dict
-
