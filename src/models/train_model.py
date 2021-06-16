@@ -32,7 +32,7 @@ def train_model(
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     if use_azure:
-        make_data = MakeDataset(generated_images_per_image=1, image_size=12)
+        make_data = MakeDataset()
         make_data.make_dataset()
         print("Dataset created")
 
