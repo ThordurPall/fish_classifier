@@ -12,7 +12,7 @@ from torch.utils.data import random_split
 
 from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
-from src.models.NeuralNetworkModel import NeuralNetworkModel
+from src.models.Hyperparameters import Hyperparameters as hp
 
 
 def train_model(
@@ -82,44 +82,29 @@ def train_model(
     fc_2 = 84
     pad = 0
     stride = 1
-    lr = learning_rate
-    epochs = epochs
+
+    hype = hp().config
 
     trainloader = torch.utils.data.DataLoader(
-        train_data, batch_size=batch_size, shuffle=True, num_workers=0
+        train_data, batch_size=hype['batch_size'], shuffle=True, num_workers=0
     )  # changed num_workers to 0 because i was getting error
 
     valoader = torch.utils.data.DataLoader(
-        val_data, batch_size=batch_size, shuffle=True, num_workers=0
+        val_data, batch_size=hype['batch_size'], shuffle=True, num_workers=0
     )
 
-    dataiter = iter(trainloader)
-    images, labels = dataiter.next()
 
-    print("Image shape", images.shape)
-    print("Labels shape", labels.shape)
-
-    model = Classifier(
-        num_classes,
-        filter1_in,
-        filter1_out,
-        filter2_out,
-        filter3_out,
-        height,
-        width,
-        pad,
-        stride,
-        kernel,
-        pool,
-        fc_1,
-        fc_2,
-    )
-
-    # Transfering the model to GPU if available
+    # Initialize the model and transfer to GPU if available
+    model = Classifier(hype['num_classes'], hype['filter1_in'],
+                       hype['filter1_out'], hype['filter2_out'],
+                       hype['filter3_out'], hype['image_height'],
+                       hype['image_width'], hype['pad'],
+                       hype['stride'], hype['kernel'], hype['pool'],
+                       hype['fc_1'], hype['fc_2'])
     model = model.to(device)
 
     criterion = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=hype['lr'])
 
     # Implement the training loop
     print("Start training")
