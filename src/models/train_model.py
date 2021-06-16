@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import logging
 import os
@@ -14,12 +15,47 @@ from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
 
+import click
 
+
+@click.command()
+@click.argument(
+    "trained_model_filepath", type=click.Path(), default="models/trained_model.pth"
+)
+@click.argument(
+    "training_statistics_filepath", type=click.Path(), default="data/processed/"
+)
+@click.argument(
+    "training_figures_filepath", type=click.Path(), default="reports/figures/"
+)
+@click.option(
+    "-ua",
+    "--use_azure",
+    type=bool,
+    default=False,
+    help="Set True to run on Azure (default=False)",
+)
+@click.option(
+    "-e",
+    "--epochs",
+    type=int,
+    default=hp().config["epochs"],
+    help="Number of training epochs (default=10)",
+)
+@click.option(
+    "-lr",
+    "--learning_rate",
+    type=float,
+    default=hp().config["lr"],
+    help="Learning rate for the PyTorch optimizer (default=0.001)",
+)
 def train_model(
     trained_model_filepath,
     training_statistics_filepath,
     training_figures_filepath,
-    use_azure=False,
+    use_azure,
+    epochs,
+    learning_rate,
 ):
 
     # Check if there is a GPU available to use
@@ -40,8 +76,8 @@ def train_model(
         # Get the experiment run context. That is, retrieve the experiment
         # run context when the script is run
         run = Run.get_context()
-        run.log("Learning rate", hype["lr"])
-        run.log("Epochs", hype["epochs"])
+        run.log("Learning rate", learning_rate)
+        run.log("Epochs", epochs)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -100,12 +136,12 @@ def train_model(
     model = model.to(device)
 
     criterion = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(), lr=hype["lr"])
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     # Implement the training loop
     print("Start training")
     train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
-    for e in range(hype["epochs"]):
+    for e in range(epochs):
         train_loss = 0
         train_correct = 0
 
@@ -166,7 +202,7 @@ def train_model(
             val_accuracies.append(val_correct / len(val_data))
 
             logger.info(
-                str("Epoch: {}/{}.. ".format(e + 1, hype["epochs"]))
+                str("Epoch: {}/{}.. ".format(e + 1, epochs))
                 + str("Training Loss: {:.3f}.. ".format(train_losses[-1]))
                 + str("Training Accuracy: {:.3f}.. ".format(train_accuracies[-1]))
                 + str("Validation Loss: {:.3f}.. ".format(val_losses[-1]))
@@ -252,4 +288,8 @@ def train_model(
         run.complete()
         print("Completed running the training expriment")
 
-    return train_val_dict
+
+if __name__ == "__main__":
+    log_fmt = "%(asctime)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.INFO, format=log_fmt)
+    train_model()
