@@ -8,7 +8,7 @@ from azureml.core.conda_dependencies import CondaDependencies
 
 def main():
     # Create a Python environment for the experiment
-    # env = Environment("experiment-fish-classifier-test")
+    env = Environment("experiment-fish-classifier-test")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
@@ -18,14 +18,40 @@ def main():
     compute_target = ComputeTarget(ws, "MLOpsGPU")
     print("Ready to use compute target: {}".format(compute_target.name))
 
-    # From a pip requirements file - Ensuring the required packages are installed
-    env = Environment.from_pip_requirements(
-        name="experiment-fish-classifier-test-2", file_path="./requirements_azure.txt"
+    # Ensure the required packages are installed
+    packages = CondaDependencies.create(
+        conda_packages=["pip"],
+        pip_packages=[
+            "azureml-defaults",
+            "torch",
+            "torchvision",
+            "pandas",
+            "numpy",
+            "matplotlib",
+            "kornia",
+            "gdown",
+            "pillow",
+        ],
     )
+    whl_path = "./dist/src-0.1.8-py3-none-any.whl"
+    whl_url = Environment.add_private_pip_wheel(
+        workspace=ws, exist_ok=True, file_path=whl_path
+    )
+    packages.add_pip_package(whl_url)
+    env.python.conda_dependencies = packages
+
+    # From a pip requirements file - Ensuring the required packages are installed
+    # env = Environment.from_pip_requirements(
+    #    name="experiment-fish-classifier-test-2", file_path="./requirements_azure.txt"
+    # )
+
+    # Add the private Python package
+    # whl_path = "./dist/src-0.1.7-py3-none-any.whl"
+    # env.add_private_pip_wheel(workspace=ws, exist_ok=True, file_path=whl_path)
 
     # Create a script config for training
     experiment_folder = "./src/models"
-    e = 30
+    e = 10
     lr = 0.001
     script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
     script_config = ScriptRunConfig(

@@ -1,5 +1,6 @@
 # local package
--e git+https://github.com/ThordurPall/fish_classifier@main#egg=src
+# -e git+https://github.com/ThordurPall/fish_classifier@main#egg=src
+# ./dist/src-0.1.7-py3-none-any.whl
 
 # external requirements
 torch>=1.8.1
