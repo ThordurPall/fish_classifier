@@ -43,6 +43,8 @@ class TestTraining:
         # Test that a model has been saved and can be loaded
         assert os.path.isfile(trained_model_filepath)
         state_dict = torch.load(trained_model_filepath)
+
+        # Check that the state dictionary was loaded
         assert hasattr(state_dict, "values")
 
         # Test that the learning curves have been saved
@@ -56,10 +58,10 @@ class TestTraining:
         # Test that losses and accuracies have been saved and can be loaded
         dict_path = os.path.join(training_statistics_filepath, "train_val_dict.pickle")
         assert os.path.isfile(dict_path)
-
         with open(dict_path, "rb") as f:
             dict_load = pickle.load(f)
 
+        # Check that the dictionary read in has the same values as the training output
         assert dict["train_losses"] == dict_load["train_losses"]
         assert dict["train_accuracies"] == dict_load["train_accuracies"]
         assert dict["val_losses"] == dict_load["val_losses"]
