@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import click
+
 from src.models.train_model import train_model
 
 
