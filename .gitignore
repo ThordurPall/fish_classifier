@@ -78,6 +78,9 @@ target/
 # exclude data from source control by default
 /data/
 
+# Exclude generated accuracy and loss figures
+/reports/
+
 # Mac OS-specific storage files
 .DS_Store
 
