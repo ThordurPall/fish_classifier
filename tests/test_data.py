@@ -28,8 +28,7 @@ class TestData:
         assert os.path.isdir(make_data.raw_unzipped_file_folder)
 
         # Check that all the 430 pictures have been unzipped
-        zip_file = make_data.raw_unzipped_file_folder + '/NA_Fish_Dataset'
-        assert len(glob.glob(zip_file + '/*/*.png')) == 281
-        assert len(glob.glob(zip_file + '/*/*.JPG')) == 148
-        assert len(glob.glob(zip_file + '/*/*.jpeg')) == 1
-        
+        zip_file = make_data.raw_unzipped_file_folder + "/NA_Fish_Dataset"
+        assert len(glob.glob(zip_file + "/*/*.png")) == 281
+        assert len(glob.glob(zip_file + "/*/*.JPG")) == 148
+        assert len(glob.glob(zip_file + "/*/*.jpeg")) == 1
