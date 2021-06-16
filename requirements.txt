@@ -9,5 +9,6 @@ numpy>=1.20.2
 matplotlib>=3.3.4
 kornia>=0.5.3
 gdown>=3.13.0
+azureml-core>=1.30.0
 flake8
 pillow
