@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 import click
 
 from src.models.train_model import train_model

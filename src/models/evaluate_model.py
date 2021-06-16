@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import click
 from pathlib import Path
 
+import click
 import torch
 
 from src.models.Classifier import Classifier

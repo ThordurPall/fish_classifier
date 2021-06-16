@@ -5,6 +5,7 @@ import os
 import pickle
 from pathlib import Path
 
+import click
 import matplotlib.pyplot as plt
 import torch
 from azureml.core import Run
@@ -14,8 +15,6 @@ from torch.utils.data import random_split
 from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
-
-import click
 
 
 @click.command()
