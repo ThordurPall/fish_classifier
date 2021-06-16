@@ -8,7 +8,7 @@ from azureml.core.conda_dependencies import CondaDependencies
 
 def main():
     # Create a Python environment for the experiment
-    env = Environment("experiment-fish-classifier-test")
+    # env = Environment("experiment-fish-classifier-test")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
@@ -18,47 +18,14 @@ def main():
     compute_target = ComputeTarget(ws, "MLOpsGPU")
     print("Ready to use compute target: {}".format(compute_target.name))
 
-    # Ensure the required packages are installed
-    packages = CondaDependencies.create(
-        conda_packages=["pip"],
-        pip_packages=[
-            "azureml-defaults",
-            "torch",
-            "torchvision",
-            "pandas",
-            "numpy",
-            "matplotlib",
-            "kornia",
-            "gdown",
-            "pillow",
-        ],
+    # From a pip requirements file - Ensuring the required packages are installed
+    env = Environment.from_pip_requirements(
+        name="experiment-fish-classifier-test-2", file_path="./requirements_azure.txt"
     )
-    whl_path = "./src-0.1.6-py3-none-any.whl"
-    whl_url = Environment.add_private_pip_wheel(
-        workspace=ws, exist_ok=True, file_path=whl_path
-    )
-    packages.add_pip_package(whl_url)
-    env.python.conda_dependencies = packages
-
-    # From a pip requirements file
-    #   env = Environment.from_pip_requirements(name = "experiment-MNIST",
-    #             file_path = "C:/Github/MLOpsExercises/requirements.txt")
-
-    # Create a script config for making the data set
-    # script_config = ScriptRunConfig(source_directory='./src/data',
-    #                                script='make_dataset_command_line.py',
-    #                                environment=env,
-    #                                compute_target=compute_target)
-
-    # Create and submit the experiment
-    # experiment = Experiment(workspace=ws, name='fish-classifier-make-dataset-test')
-    # run = experiment.submit(config=script_config)
-    # run.wait_for_completion()
-    # print('Finished running the make dataset script')
 
     # Create a script config for training
     experiment_folder = "./src/models"
-    e = 3
+    e = 30
     lr = 0.001
     script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
     script_config = ScriptRunConfig(

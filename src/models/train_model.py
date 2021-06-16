@@ -12,7 +12,7 @@ from torch.utils.data import random_split
 
 from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
-from src.models.NeuralNetworkModel import NeuralNetworkModel
+from src.models.Hyperparameters import Hyperparameters as hp
 
 
 def train_model(
@@ -68,54 +68,26 @@ def train_model(
 
     ##### Hyper parameters
     batch_size = 64
-    num_classes = len(mapping)
-    rgb = train_imgs.shape[1]
-    height = train_imgs.shape[2]
-    width = train_imgs.shape[3]
-    filter1_in = rgb
-    filter1_out = 6
-    kernel = 2
-    pool = 2
-    filter2_out = 16
-    filter3_out = 48
-    fc_1 = 120
-    fc_2 = 84
-    pad = 0
-    stride = 1
+    hype = hp().config
     lr = learning_rate
     epochs = epochs
-
-    trainloader = torch.utils.data.DataLoader(
-        train_data, batch_size=batch_size, shuffle=True, num_workers=0
-    )  # changed num_workers to 0 because i was getting error
-
-    valoader = torch.utils.data.DataLoader(
-        val_data, batch_size=batch_size, shuffle=True, num_workers=0
-    )
+    
+    trainloader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
+                                          shuffle=True, num_workers=0) #changed num_workers to 0 because i was getting error
 
     dataiter = iter(trainloader)
     images, labels = dataiter.next()
 
-    print("Image shape", images.shape)
-    print("Labels shape", labels.shape)
+    print('Image shape', images.shape)
+    print('Labels shape', labels.shape)
 
-    model = Classifier(
-        num_classes,
-        filter1_in,
-        filter1_out,
-        filter2_out,
-        filter3_out,
-        height,
-        width,
-        pad,
-        stride,
-        kernel,
-        pool,
-        fc_1,
-        fc_2,
-    )
-
-    # Transfering the model to GPU if available
+    # Initialize the model and transfer to GPU if available
+    model = Classifier(hype['num_classes'], hype['filter1_in'],
+                       hype['filter1_out'], hype['filter2_out'],
+                       hype['filter3_out'], hype['image_height'],
+                       hype['image_width'], hype['pad'],
+                       hype['stride'], hype['kernel'], hype['pool'],
+                       hype['fc_1'], hype['fc_2'])
     model = model.to(device)
 
     criterion = nn.NLLLoss()
