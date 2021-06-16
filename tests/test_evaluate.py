@@ -8,8 +8,8 @@ class TestEvaluate:
     def test_evaluate_model(self):
         """
         Test that the model evaluation runs and returns the accuracy
-        """  
-        
+        """
+
         # Make sure that the data and model exist
         make_data = MakeDataset(generated_images_per_image=1)
         make_data.make_dataset()
