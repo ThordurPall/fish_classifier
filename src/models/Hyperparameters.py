@@ -1,7 +1,7 @@
 class Hyperparameters:
-    def __init__(self, config):
-        super().__init__()
-        self.config = {
+    def __init__(
+        self,
+        config={
             "batch_size": 64,
             "num_classes": 9,
             "rgb": 3,
@@ -19,9 +19,10 @@ class Hyperparameters:
             "stride": 1,
             "lr": 0.001,
             "epochs": 30,
-        }
-        if config:
-            self.config = config
+        },
+    ):
+        super().__init__()
+        self.config = config
 
     def config(self):
         return self.config
