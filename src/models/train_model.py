@@ -68,43 +68,44 @@ def train_model(
 
     ##### Hyper parameters
     batch_size = 64
-    num_classes = len(mapping)
-    rgb = train_imgs.shape[1]
-    height = train_imgs.shape[2]
-    width = train_imgs.shape[3]
-    filter1_in = rgb
-    filter1_out = 6
-    kernel = 2
-    pool = 2
-    filter2_out = 16
-    filter3_out = 48
-    fc_1 = 120
-    fc_2 = 84
-    pad = 0
-    stride = 1
-
     hype = hp().config
+    lr = learning_rate
+    epochs = epochs
 
     trainloader = torch.utils.data.DataLoader(
-        train_data, batch_size=hype['batch_size'], shuffle=True, num_workers=0
+        train_data, batch_size=batch_size, shuffle=True, num_workers=0
     )  # changed num_workers to 0 because i was getting error
 
     valoader = torch.utils.data.DataLoader(
-        val_data, batch_size=hype['batch_size'], shuffle=True, num_workers=0
+        val_data, batch_size=batch_size, shuffle=True, num_workers=0
     )
 
+    dataiter = iter(trainloader)
+    images, labels = dataiter.next()
+
+    print("Image shape", images.shape)
+    print("Labels shape", labels.shape)
 
     # Initialize the model and transfer to GPU if available
-    model = Classifier(hype['num_classes'], hype['filter1_in'],
-                       hype['filter1_out'], hype['filter2_out'],
-                       hype['filter3_out'], hype['image_height'],
-                       hype['image_width'], hype['pad'],
-                       hype['stride'], hype['kernel'], hype['pool'],
-                       hype['fc_1'], hype['fc_2'])
+    model = Classifier(
+        hype["num_classes"],
+        hype["filter1_in"],
+        hype["filter1_out"],
+        hype["filter2_out"],
+        hype["filter3_out"],
+        hype["image_height"],
+        hype["image_width"],
+        hype["pad"],
+        hype["stride"],
+        hype["kernel"],
+        hype["pool"],
+        hype["fc_1"],
+        hype["fc_2"],
+    )
     model = model.to(device)
 
     criterion = nn.NLLLoss()
-    optimizer = optim.Adam(model.parameters(), lr=hype['lr'])
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
     # Implement the training loop
     print("Start training")
@@ -257,3 +258,4 @@ def train_model(
         print("Completed running the training expriment")
 
     return train_val_dict
+
