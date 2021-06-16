@@ -2,9 +2,8 @@
 import pytest
 import torch
 
-from src.data.MakeDataset import MakeDataset
+from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
-from src.models.train_model import train_model
 
 
 class TestModel:
