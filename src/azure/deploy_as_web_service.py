@@ -22,7 +22,8 @@ def main():
 
     # Ensure the required packages are installed
     packages = CondaDependencies.create(
-        conda_packages=["pip"], pip_packages=["azureml-defaults", "torch"],
+        conda_packages=["pip"],
+        pip_packages=["azureml-defaults", "torch", "torchvision", "pillow"],
     )
     whl_path = "./dist/src-0.1.9-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(

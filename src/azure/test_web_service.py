@@ -31,13 +31,9 @@ def main():
     # Test the web service with a single test image
     # Open the image and change color encoding to RGB
     # in case the image is a png
-    img_name = "./data/raw/unzipped/NA_Fish_Dataset/Black Sea Sprat/00001.png"
+    img_name = "./data/raw/unzipped/NA_Fish_Dataset/Black Sea Sprat/00015.png"
     img = Image.open(img_name)
-    print(img)
-    if img_name.endswith(".png"):
-        img = img.convert("RGB")
-    print(img)
-    print(img.size)
+    img = img.convert("RGB")
 
     # Convert the image to base64
     data = {}
@@ -49,24 +45,9 @@ def main():
     headers = {"Content-Type": "application/json"}
     input_json = json.dumps(data)
 
+    # Call the REST service
     predictions = requests.post(endpoint, input_json, headers=headers)
-    print(print(predictions.text))
-    print(input_json)
-
-    # Code for decoding image
-    json_payload = json.loads(input_json)
-    img_byte = json_payload["img"]
-    # json_img = json.loads(json.dumps(jsonStr))
-    img_64 = base64.b64decode(img_byte)
-
-    img = BytesIO(img_64)
-    image = Image.open(img)
-    plt.imshow(image)
-    plt.show()
-    # print(input_json["img"])
-
-    # webservice.delete()
-    # print("Service deleted.")
+    print(predictions.text)
 
     # Test the web service on the entire test set
 

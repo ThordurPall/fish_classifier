@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import base64
 import json
+from io import BytesIO
 
-import numpy as np
 import torch
 from azureml.core.model import Model
+from PIL import Image
+from torchvision import transforms
 
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
@@ -46,21 +49,46 @@ def init():
 
 # Called when a request is received
 def run(raw_data):
-    # Transform the input data to a numpy array and then to tensor
-    img = raw_data["img"]
-    # data_np = np.array(json.loads(raw_data)["data"])
-    # data = torch.from_numpy(data_np)
-    print(img)
+    # Read and decode the image from json
+    json_payload = json.loads(raw_data)
+    img_byte = json_payload["img"]
+    img_64 = base64.b64decode(img_byte)
+    img = BytesIO(img_64)
 
-    # Get a prediction from the model
-    # predictions = model.predict(data)
+    # Define the transformations to apply
+    transform = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Resize((128, 128)),
+            transforms.Normalize((0.5,), (0.5,)),
+        ]
+    )
 
-    # Get the corresponding classname for each prediction (0 or 1)
-    # classnames = ["not-diabetic", "diabetic"]
-    # predicted_classes = []
-    # for prediction in predictions:
-    #    predicted_classes.append(classnames[prediction])
+    # Open the image, apply the transformations and transform to tensor
+    image = Image.open(img)
+    image = transform(image).float()
+    image = torch.tensor(image)
+    image = image.unsqueeze(0)
 
-    # Return the predictions as JSON
-    # Just to check that we have access to the model here
-    return img  # json.dumps(predicted_classes)
+    # Use the model to get predictions
+    log_ps = model(image)
+    ps = torch.exp(log_ps)
+
+    # Get the most probable class and its probability
+    top_probs, top_class = ps.topk(1, dim=1)
+
+    # Define a mapping from class IDs to labels
+    classes = {
+        "0": "Trout",
+        "1": "Shrimp",
+        "2": "Striped Red Mullet",
+        "3": "Gilt Head Bream",
+        "4": "Black Sea Sprat",
+        "5": "Sea Bass",
+        "6": "Red Sea Bream",
+        "7": "Red Mullet",
+        "8": "Horse Mackerel",
+    }
+    return json.dumps(
+        {"Class": classes[str(top_class.item())], "Probability": str(top_probs.item())}
+    )
