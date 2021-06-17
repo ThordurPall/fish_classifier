@@ -94,7 +94,7 @@ class MakeDataset:
                 zip_ref.extractall(self.raw_unzipped_file_folder)
             print("Data successfully unzipped")
 
-    def process_data(self, force_process, add_csv_file, with_printouts):
+    def process_data(self, force_process, add_csv_file):
         """Processes the raw data"""
 
         if (
