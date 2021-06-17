@@ -3,7 +3,7 @@ from io import BytesIO
 
 import numpy as np
 import torchvision.transforms as transforms
-from Pillow import Image
+from PIL import Image
 
 from src.models.Hyperparameters import Hyperparameters as hp
 
