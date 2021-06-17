@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 import base64
+import json
 from io import BytesIO
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import requests
 import torch
 from azureml.core import Webservice, Workspace
@@ -24,9 +24,9 @@ def main():
         print(webservice)
 
     # Get the fish classifier web service and its uri
-    # webservice = Webservice(ws, "fish-classifier-service")
-    # endpoint = webservice.scoring_uri
-    # print(endpoint)
+    webservice = Webservice(ws, "fish-classifier-service")
+    endpoint = webservice.scoring_uri
+    print(endpoint)
 
     # Test the web service with a single test image
     # Open the image and change color encoding to RGB
@@ -38,33 +38,22 @@ def main():
         img = img.convert("RGB")
     print(img)
     print(img.size)
-    img_tensor = transforms.ToTensor()(img)  # .unsqueeze_(0)
-    print(img_tensor.shape)
-    print(img_tensor)
-    img_numpy = img_tensor.numpy()
-    print(img_numpy.shape)
-    print(img_numpy.ravel().shape)
-    img_list = img_numpy.tolist()
-    # print(img_list)
 
-    # hype = hp().config
-    # img_tensor = torch.Tensor(1, 3, hype["image_height"], hype["image_width"])
-
-    # Convert the array to a serializable list in a JSON document
-    # input_json = json.dumps({"data": img_tensor})
-
+    # Convert the image to base64
     data = {}
     with open(img_name, mode="rb") as file:
         img = file.read()
     data["img"] = base64.b64encode(img).decode("utf-8")
+
     # Set the content type
     headers = {"Content-Type": "application/json"}
     input_json = json.dumps(data)
 
-    # predictions = requests.post(endpoint, input_json, headers=headers)
-    # print(print(predictions.text))
-    # print(input_json)
+    predictions = requests.post(endpoint, input_json, headers=headers)
+    print(print(predictions.text))
+    print(input_json)
 
+    # Code for decoding image
     json_payload = json.loads(input_json)
     img_byte = json_payload["img"]
     # json_img = json.loads(json.dumps(jsonStr))
