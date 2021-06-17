@@ -41,6 +41,7 @@ class Classifier(nn.Module):
         self.fc_2 = fc_2
         self.pad = pad
         self.stride = stride
+        self.also_return_features = False
 
         # First convolution
         self.conv1 = nn.Conv2d(self.filter1_in, self.filter1_out, self.kernel)
@@ -112,7 +113,12 @@ class Classifier(nn.Module):
 
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
+
+        # Store the abstract features at this point
+        features = x
+
         x = self.fc3(x)
         x = F.log_softmax(x, dim=1)
-
+        if self.also_return_features:
+            return x, features
         return x

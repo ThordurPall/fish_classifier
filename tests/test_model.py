@@ -70,4 +70,4 @@ class TestModel:
 
         # Chack that there are batch, channel, width and height dimensions
         with pytest.raises(ValueError, match="Expected input to be a 4D tensor"):
-            x = model.forward(test_input)
+            _ = model.forward(test_input)
