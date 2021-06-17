@@ -3,8 +3,8 @@ import os
 
 from azureml.core import Model, Workspace
 from azureml.core.conda_dependencies import CondaDependencies
-from azureml.core.webservice import AciWebservice
 from azureml.core.model import InferenceConfig
+from azureml.core.webservice import AciWebservice
 
 
 def main():

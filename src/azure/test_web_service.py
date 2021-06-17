@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
-import requests
 
-from azureml.core import Workspace, Webservice
+import requests
+from azureml.core import Webservice, Workspace
 
 
 def main():
