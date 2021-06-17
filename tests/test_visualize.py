@@ -2,7 +2,8 @@
 import os.path
 
 from src.data.MakeDataset import MakeDataset
-from src.visualization.visualize import plot_class_distributions, plot_tsne_test_set
+from src.visualization.visualize import (plot_class_distributions,
+                                         plot_tsne_test_set)
 
 
 class TestVisualize:
