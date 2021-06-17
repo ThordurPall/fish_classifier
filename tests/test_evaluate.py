@@ -13,17 +13,18 @@ class TestEvaluate:
         # Make sure that the data and model exist
         make_data = MakeDataset(generated_images_per_image=1)
         make_data.make_dataset()
-        trained_model_filepath = 'models/trained_model.pth'
-        training_statistics_filepath = 'data/processed/'
-        training_figures_filepath = 'reports/figures/'
+        trained_model_filepath = "models/trained_model.pth"
+        training_statistics_filepath = "data/processed/"
+        training_figures_filepath = "reports/figures/"
 
-        train_model(trained_model_filepath,
-                    training_statistics_filepath,
-                    training_figures_filepath,
-                    epochs=3)
+        train_model(
+            trained_model_filepath,
+            training_statistics_filepath,
+            training_figures_filepath,
+            epochs=3,
+        )
 
         # Check that the function returns the test accuracy and
         # that it is between zero and one
         accuracy = evaluate_model()
-        assert (0.0 <= accuracy <= 1.0)
-
+        assert 0.0 <= accuracy <= 1.0
