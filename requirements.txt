@@ -13,3 +13,4 @@ pillow
 pandas
 numpy
 click
+scikit-learn
