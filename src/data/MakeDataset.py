@@ -35,7 +35,7 @@ class MakeDataset:
         force_unzip=False,
         force_process=False,
         training_partition_percentage=0.85,
-        generated_images_per_image=50,
+        generated_images_per_image=200,
         image_size=128,
     ):
         super().__init__()
