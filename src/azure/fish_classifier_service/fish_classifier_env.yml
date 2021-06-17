@@ -15,7 +15,9 @@ dependencies:
   - torch
   - torchvision
   - pillow
-  - https://mlopsexercises6874042250.blob.core.windows.net/azureml/Environment/azureml-private-packages/src-0.1.9-py3-none-any.whl
+  - kornia
+  - numpy
+  - https://mlopsexercises6874042250.blob.core.windows.net/azureml/Environment/azureml-private-packages/src-0.1.14-py3-none-any.whl
 - pip
 channels:
 - anaconda

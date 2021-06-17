@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
-import base64
+
 import json
-from io import BytesIO
 
 import matplotlib.pyplot as plt
 import requests
-import torch
 from azureml.core import Webservice, Workspace
 from PIL import Image
-from torchvision import transforms
 
-from src.models.Hyperparameters import Hyperparameters as hp
+from src.utils.DataTransforms import DataTransforms
 
 
 def main():
 
     # Load the workspace from the saved config file
+    dt = DataTransforms()
     ws = Workspace.from_config()
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
@@ -37,9 +35,7 @@ def main():
 
     # Convert the image to base64
     data = {}
-    with open(img_name, mode="rb") as file:
-        img = file.read()
-    data["img"] = base64.b64encode(img).decode("utf-8")
+    data["img"] = dt.PIL_image_to_b64(Image.open(img_name))
 
     # Set the content type
     headers = {"Content-Type": "application/json"}
@@ -47,7 +43,11 @@ def main():
 
     # Call the REST service
     predictions = requests.post(endpoint, input_json, headers=headers)
+    print(predictions)
     print(predictions.text)
+
+    # webservice.delete()
+    # print("Service deleted.")
 
     # Test the web service on the entire test set
 

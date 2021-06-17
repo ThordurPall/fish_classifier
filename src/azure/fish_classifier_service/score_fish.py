@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-import base64
 import json
-from io import BytesIO
 
 import torch
 from azureml.core.model import Model
-from PIL import Image
-from torchvision import transforms
 
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
+from src.utils.AugmentationPipeline import AugmentationPipeline
+from src.utils.DataTransforms import DataTransforms
 
 
 # Called when the service is loaded
@@ -49,25 +47,10 @@ def init():
 
 # Called when a request is received
 def run(raw_data):
-    # Read and decode the image from json
-    json_payload = json.loads(raw_data)
-    img_byte = json_payload["img"]
-    img_64 = base64.b64decode(img_byte)
-    img = BytesIO(img_64)
-
-    # Define the transformations to apply
-    transform = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Resize((128, 128)),
-            transforms.Normalize((0.5,), (0.5,)),
-        ]
-    )
-
-    # Open the image, apply the transformations and transform to tensor
-    image = Image.open(img)
-    image = transform(image).float()
-    image = torch.tensor(image)
+    # Read in image form json, decode and transform to tensor
+    dt = DataTransforms()
+    image = dt.b64_to_PIL_image(json.loads(raw_data)["img"])
+    image = dt.PIL_image_to_tensor(image)
     image = image.unsqueeze(0)
 
     # Use the model to get predictions
