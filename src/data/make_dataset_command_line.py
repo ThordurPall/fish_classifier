@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from pathlib import Path
 
 import click
 
@@ -21,7 +20,10 @@ from src.data.MakeDataset import MakeDataset
 @click.option(
     "-fp", "--force_process", type=bool, default=False, help="Force process of the data"
 )
-def main(force_unzip, force_download, force_process):
+@click.option(
+    "-csv", "--add_csv_file", type=bool, default=False, help="Converts the data to csv"
+)
+def main(force_unzip, force_download, force_process, add_csv_file):
     """Runs data processing scripts to turn raw data from (../raw) into
     cleaned data ready to be analyzed (saved in ../processed).
     """
@@ -32,7 +34,8 @@ def main(force_unzip, force_download, force_process):
         force_download=force_download,
         force_unzip=force_unzip,
         image_size=128,
-        generated_images_per_image=50,
+        generated_images_per_image=100,
+        add_csv_file=add_csv_file,
     )
     make_data.make_dataset()
 

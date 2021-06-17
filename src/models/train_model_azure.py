@@ -15,7 +15,7 @@ def main():
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "MLOpsGPU")
+    compute_target = ComputeTarget(ws, "agicksgpu")
     print("Ready to use compute target: {}".format(compute_target.name))
 
     # Ensure the required packages are installed

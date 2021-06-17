@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import pickle
@@ -49,12 +48,7 @@ def train_model(
 
     project_dir = Path(__file__).resolve().parents[2]
     train_set_path = str(project_dir) + "/data/processed/training.pt"
-    mapping_file_path = str(project_dir) + "/data/processed/mapping.json"
     train_imgs, train_labels = torch.load(train_set_path)  # img, label
-    mapping = {}
-
-    with open(mapping_file_path) as json_file:
-        mapping = json.load(json_file)
 
     # load data
     train_set = torch.utils.data.TensorDataset(train_imgs, train_labels)
@@ -66,7 +60,7 @@ def train_model(
     print(f"Length of Train Data : {len(train_data)}")
     print(f"Length of Validation Data : {len(val_data)}")
 
-    ##### Hyper parameters
+    # Hyper parameters
     batch_size = 64
     hype = hp().config
     lr = learning_rate
@@ -258,4 +252,3 @@ def train_model(
         print("Completed running the training expriment")
 
     return train_val_dict
-

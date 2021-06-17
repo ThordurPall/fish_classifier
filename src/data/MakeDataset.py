@@ -5,12 +5,9 @@ import zipfile
 from pathlib import Path
 
 import gdown
-import kornia
 import kornia.augmentation as K
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
 
@@ -35,8 +32,9 @@ class MakeDataset:
         force_unzip=False,
         force_process=False,
         training_partition_percentage=0.85,
-        generated_images_per_image=200,
+        generated_images_per_image=1,
         image_size=128,
+        add_csv_file=False,
     ):
         super().__init__()
         project_dir = Path(__file__).resolve().parents[2]
@@ -49,6 +47,10 @@ class MakeDataset:
         self.raw_zip_file = str(project_dir) + "/data/raw/raw.zip"
         self.processed_training_set = str(project_dir) + "/data/processed/training.pt"
         self.processed_test_set = str(project_dir) + "/data/processed/test.pt"
+        self.processed_training_set_csv = (
+            str(project_dir) + "/data/processed/training.csv"
+        )
+        self.processed_test_set_csv = str(project_dir) + "/data/processed/test.csv"
         self.processed_files_folder = str(project_dir) + "/data/processed"
         self.mapping_file = str(project_dir) + "/data/processed/mapping.json"
         self.raw_files_folder = str(project_dir) + "/data/raw"
@@ -56,6 +58,7 @@ class MakeDataset:
         self.generated_images_per_image = generated_images_per_image
         self.image_size_x = image_size
         self.image_size_y = image_size
+        self.add_csv_file = add_csv_file
 
         # Make folders if they do not exist
         if not os.path.isdir(self.data_folder):
@@ -68,7 +71,7 @@ class MakeDataset:
     def make_dataset(self):
         self.download_data(self.force_download)
         self.unzip_data(self.force_unzip)
-        self.process_data(self.force_process)
+        self.process_data(self.force_process, self.add_csv_file)
         print("dataset created")
 
     def download_data(self, force_download):
@@ -91,7 +94,7 @@ class MakeDataset:
                 zip_ref.extractall(self.raw_unzipped_file_folder)
             print("Data successfully unzipped")
 
-    def process_data(self, force_process):
+    def process_data(self, force_process, add_csv_file, with_printouts):
         """Processes the raw data"""
 
         if (
@@ -104,7 +107,7 @@ class MakeDataset:
             for root, dirs, files in os.walk(
                 self.raw_unzipped_file_folder, topdown=True
             ):
-                if not "__MACOSX" in root:
+                if "__MACOSX" not in root:
                     for name in files:
                         if (
                             name.endswith(".png")
@@ -176,6 +179,61 @@ class MakeDataset:
                 labels_for_training = labels_array[0:training_partition]
                 images_for_testing = images_array[training_partition:]
                 labels_for_testing = labels_array[training_partition:]
+
+                if add_csv_file:
+                    pixels = (
+                        images_for_training[0].shape[1]
+                        * images_for_training[0].shape[2]
+                        * images_for_training[0].shape[3]
+                    )
+                    csv_data_training_set = np.array(
+                        np.append(
+                            [i + 0.0 for i in range(pixels)],
+                            [pixels + 0.0],
+                        )
+                    )
+                    csv_data_testing_set = np.array(
+                        np.append(
+                            [i + 0.0 for i in range(pixels)],
+                            [pixels + 0.0],
+                        )
+                    )
+                    for i, image in enumerate(images_for_training):
+                        csv_data_training_set = np.vstack(
+                            (
+                                csv_data_training_set,
+                                [
+                                    np.append(
+                                        np.array(image).ravel(),
+                                        np.array(labels_for_training[i]),
+                                    )
+                                ],
+                            )
+                        )
+                    for i, image in enumerate(images_for_testing):
+                        csv_data_testing_set = np.vstack(
+                            (
+                                csv_data_testing_set,
+                                [
+                                    np.append(
+                                        np.array(image).ravel(),
+                                        np.array(labels_for_testing[i]),
+                                    )
+                                ],
+                            )
+                        )
+                    np.savetxt(
+                        self.processed_training_set_csv,
+                        csv_data_training_set,
+                        delimiter=",",
+                        fmt="%.5e",
+                    )
+                    np.savetxt(
+                        self.processed_test_set_csv,
+                        csv_data_testing_set,
+                        delimiter=",",
+                        fmt="%.5e",
+                    )
 
                 # Convert images and labels in training set to tensors
                 images_for_training_as_tensor = torch.Tensor(
