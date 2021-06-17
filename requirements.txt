@@ -12,3 +12,4 @@ flake8
 pillow
 pandas
 numpy
+click
