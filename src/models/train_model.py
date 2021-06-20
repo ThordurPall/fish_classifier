@@ -61,8 +61,8 @@ def train_model(
     print(f"Length of Validation Data : {len(val_data)}")
 
     # Hyper parameters
-    batch_size = 64
     hype = hp().config
+    batch_size = hype["batch_size"]
     lr = learning_rate
     epochs = epochs
 
@@ -95,6 +95,7 @@ def train_model(
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
     )
     model = model.to(device)
 

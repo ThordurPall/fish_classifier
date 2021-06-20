@@ -21,10 +21,10 @@ class TestEvaluate:
             trained_model_filepath,
             training_statistics_filepath,
             training_figures_filepath,
-            epochs=3,
+            epochs=2,
         )
 
         # Check that the function returns the test accuracy and
         # that it is between zero and one
         accuracy = evaluate_model()
-        assert 0.0 <= accuracy <= 1.0
+        assert 0.0 <= accuracy <= 1.0, 'Accuracy is not between 0 and 1'
