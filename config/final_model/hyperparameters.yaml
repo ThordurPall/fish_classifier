@@ -1,0 +1,8 @@
+dataset_path: "~/datasets"
+batch_size: 100
+x_dim: 784
+hidden_dim: 400
+latent_dim: 20
+lr: 0.001
+epochs: 20
+seed: 0
