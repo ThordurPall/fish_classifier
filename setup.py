@@ -1,10 +1,10 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='src',
+    name="src",
     packages=find_packages(),
-    version='0.1.9',
-    description='A neural network fish classifier using a large-scale dataset for fish segmentation and classification',
-    author='DTU',
-    license='MIT',
+    version="0.1.14",
+    description="A neural network fish classifier using a large-scale dataset for fish segmentation and classification",
+    author="DTU",
+    license="MIT",
 )
