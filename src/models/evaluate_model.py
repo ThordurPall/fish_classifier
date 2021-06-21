@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+# import json
 import logging
 from pathlib import Path
 
@@ -52,10 +52,10 @@ def evaluate_model(
     #                                transforms.Normalize((0.5,), (0.5,)), ])
 
     # Get the class id, label mapping
-    mapping = {}
-    mapping_file_path = str(project_dir) + "/data/processed/mapping.json"
-    with open(mapping_file_path) as json_file:
-        mapping = json.load(json_file)
+    # mapping = {}
+    # mapping_file_path = str(project_dir) + "/data/processed/mapping.json"
+    # with open(mapping_file_path) as json_file:
+    #    mapping = json.load(json_file)
 
     # Load the test data
     test_set_path = str(project_dir) + "/data/processed/test.pt"

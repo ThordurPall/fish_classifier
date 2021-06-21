@@ -16,11 +16,10 @@ class DataTransforms:
         image = image.convert("RGB")
         transform = transforms.Compose(
             [
-                transforms.ToTensor(),
                 transforms.Resize(
                     (self.config["image_height"], self.config["image_width"])
                 ),
-                transforms.Normalize((0.5,), (0.5,)),
+                transforms.ToTensor(),
             ]
         )
         return transform(image)

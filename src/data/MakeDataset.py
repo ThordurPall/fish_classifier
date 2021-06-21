@@ -5,11 +5,11 @@ import zipfile
 from pathlib import Path
 
 import gdown
-import kornia.augmentation as K
 import numpy as np
 import torch
-import torchvision.transforms as transforms
 from PIL import Image
+from src.utils.DataTransforms import DataTransforms as dt
+from src.utils.AugmentationPipeline import AugmentationPipeline as ap
 
 
 class MakeDataset:
@@ -118,29 +118,14 @@ class MakeDataset:
                             # Open the image and change color encoding to RGB
                             # in case the image is a png
                             image = Image.open(os.path.join(root, name))
-                            if name.endswith(".png"):
-                                image = image.convert("RGB")
 
                             # Perform some transformations on the image
-                            transform = transforms.Compose(
-                                [
-                                    transforms.ToTensor(),
-                                    transforms.Resize(
-                                        (self.image_size_x, self.image_size_y)
-                                    ),
-                                    transforms.Normalize((0.5,), (0.5,)),
-                                ]
-                            )
-                            image = transform(image)
+                            image = dt().PIL_image_to_tensor(image).unsqueeze(0)
 
                             # Perform augumentations on the image
                             for _ in range(self.generated_images_per_image):
                                 # Perform kornia operations on the image
-                                self.aff = K.RandomAffine(
-                                    360, return_transform=True, same_on_batch=True
-                                )
-                                self.cj = K.ColorJitter(0.2, 0.3, 0.2, 0.3)
-                                img_out, _ = self.aff(self.cj(image))
+                                img_out = ap().forward(image)
 
                                 # Append processed image and label to arrays
                                 images_array.append(img_out)
@@ -181,58 +166,11 @@ class MakeDataset:
                 labels_for_testing = labels_array[training_partition:]
 
                 if add_csv_file:
-                    pixels = (
-                        images_for_training[0].shape[1]
-                        * images_for_training[0].shape[2]
-                        * images_for_training[0].shape[3]
-                    )
-                    csv_data_training_set = np.array(
-                        np.append(
-                            [i + 0.0 for i in range(pixels)],
-                            [pixels + 0.0],
-                        )
-                    )
-                    csv_data_testing_set = np.array(
-                        np.append(
-                            [i + 0.0 for i in range(pixels)],
-                            [pixels + 0.0],
-                        )
-                    )
-                    for i, image in enumerate(images_for_training):
-                        csv_data_training_set = np.vstack(
-                            (
-                                csv_data_training_set,
-                                [
-                                    np.append(
-                                        np.array(image).ravel(),
-                                        np.array(labels_for_training[i]),
-                                    )
-                                ],
-                            )
-                        )
-                    for i, image in enumerate(images_for_testing):
-                        csv_data_testing_set = np.vstack(
-                            (
-                                csv_data_testing_set,
-                                [
-                                    np.append(
-                                        np.array(image).ravel(),
-                                        np.array(labels_for_testing[i]),
-                                    )
-                                ],
-                            )
-                        )
-                    np.savetxt(
-                        self.processed_training_set_csv,
-                        csv_data_training_set,
-                        delimiter=",",
-                        fmt="%.5e",
-                    )
-                    np.savetxt(
-                        self.processed_test_set_csv,
-                        csv_data_testing_set,
-                        delimiter=",",
-                        fmt="%.5e",
+                    self.add_csv_file(
+                        images_for_training,
+                        labels_for_training,
+                        images_for_testing,
+                        labels_for_testing,
                     )
 
                 # Convert images and labels in training set to tensors
@@ -270,3 +208,70 @@ class MakeDataset:
                 print("Finished processing the data")
             else:
                 print("No data to process")
+
+    def add_csv_file(
+        self,
+        images_for_training,
+        labels_for_training,
+        images_for_testing,
+        labels_for_testing,
+    ):
+        pixels = (
+            images_for_training[0].shape[1]
+            * images_for_training[0].shape[2]
+            * images_for_training[0].shape[3]
+        )
+        csv_data_training_set = np.array(
+            np.append(
+                [i + 0.0 for i in range(pixels)],
+                [pixels + 0.0],
+            )
+        )
+        csv_data_testing_set = np.array(
+            np.append(
+                [i + 0.0 for i in range(pixels)],
+                [pixels + 0.0],
+            )
+        )
+        for i, image in enumerate(images_for_training):
+            csv_data_training_set = np.vstack(
+                (
+                    csv_data_training_set,
+                    [
+                        np.append(
+                            np.array(image).ravel(),
+                            np.array(labels_for_training[i]),
+                        )
+                    ],
+                )
+            )
+        for i, image in enumerate(images_for_testing):
+            csv_data_testing_set = np.vstack(
+                (
+                    csv_data_testing_set,
+                    [
+                        np.append(
+                            np.array(image).ravel(),
+                            np.array(labels_for_testing[i]),
+                        )
+                    ],
+                )
+            )
+        for idx, x in np.ndenumerate(csv_data_training_set):
+            if idx[0] != 0:
+                csv_data_training_set[idx[0]][idx[1]] = int(x * 255.0)
+        for idx, x in np.ndenumerate(csv_data_testing_set):
+            if idx[0] != 0:
+                csv_data_testing_set[idx[0]][idx[1]] = int(x * 255.0)
+        np.savetxt(
+            self.processed_training_set_csv,
+            csv_data_training_set,
+            delimiter=",",
+            fmt="%d",
+        )
+        np.savetxt(
+            self.processed_test_set_csv,
+            csv_data_testing_set,
+            delimiter=",",
+            fmt="%d",
+        )
