@@ -13,7 +13,11 @@ dependencies:
 - pip:
   - azureml-defaults~=1.30.0
   - torch
-  - https://mlopsexercises6874042250.blob.core.windows.net/azureml/Environment/azureml-private-packages/src-0.1.9-py3-none-any.whl
+  - torchvision
+  - pillow
+  - kornia
+  - numpy
+  - https://mlopsexercises6874042250.blob.core.windows.net/azureml/Environment/azureml-private-packages/src-0.1.14-py3-none-any.whl
 - pip
 channels:
 - anaconda

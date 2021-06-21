@@ -18,7 +18,7 @@ class DataTransforms:
             [
                 transforms.ToTensor(),
                 transforms.Resize(
-                    (self.config["image_size_x"], self.config["image_size_y"])
+                    (self.config["image_height"], self.config["image_width"])
                 ),
                 transforms.Normalize((0.5,), (0.5,)),
             ]

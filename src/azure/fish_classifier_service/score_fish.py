@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
 
-import numpy as np
 import torch
 from azureml.core.model import Model
 
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
+from src.utils.AugmentationPipeline import AugmentationPipeline
+from src.utils.DataTransforms import DataTransforms
 
 
 # Called when the service is loaded
@@ -46,21 +47,31 @@ def init():
 
 # Called when a request is received
 def run(raw_data):
-    # Transform the input data to a numpy array and then to tensor
-    img = raw_data["img"]
-    # data_np = np.array(json.loads(raw_data)["data"])
-    # data = torch.from_numpy(data_np)
-    print(img)
+    # Read in image form json, decode and transform to tensor
+    dt = DataTransforms()
+    image = dt.b64_to_PIL_image(json.loads(raw_data)["img"])
+    image = dt.PIL_image_to_tensor(image)
+    image = image.unsqueeze(0)
 
-    # Get a prediction from the model
-    # predictions = model.predict(data)
+    # Use the model to get predictions
+    log_ps = model(image)
+    ps = torch.exp(log_ps)
 
-    # Get the corresponding classname for each prediction (0 or 1)
-    # classnames = ["not-diabetic", "diabetic"]
-    # predicted_classes = []
-    # for prediction in predictions:
-    #    predicted_classes.append(classnames[prediction])
+    # Get the most probable class and its probability
+    top_probs, top_class = ps.topk(1, dim=1)
 
-    # Return the predictions as JSON
-    # Just to check that we have access to the model here
-    return img  # json.dumps(predicted_classes)
+    # Define a mapping from class IDs to labels
+    classes = {
+        "0": "Trout",
+        "1": "Shrimp",
+        "2": "Striped Red Mullet",
+        "3": "Gilt Head Bream",
+        "4": "Black Sea Sprat",
+        "5": "Sea Bass",
+        "6": "Red Sea Bream",
+        "7": "Red Mullet",
+        "8": "Horse Mackerel",
+    }
+    return json.dumps(
+        {"Class": classes[str(top_class.item())], "Probability": str(top_probs.item())}
+    )
