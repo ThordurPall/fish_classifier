@@ -13,9 +13,9 @@ from src.models.Hyperparameters import Hyperparameters as hp
 
 
 def plot_tsne_test_set(trained_model_filepath, data_file_path, figures_folderpath):
-    """ Extracts features just before the final classification layer of the network
-        in TRAINED_MODEL_FILEPATH and does t-SNE embedding of the features for
-        the fish test set located in DATA_FILEPATH."""
+    """Extracts features just before the final classification layer of the network
+    in TRAINED_MODEL_FILEPATH and does t-SNE embedding of the features for
+    the fish test set located in DATA_FILEPATH."""
 
     logger = logging.getLogger(__name__)
     logger.info("Creating a t-SNE embedding of the features for the fish test set")
@@ -43,6 +43,7 @@ def plot_tsne_test_set(trained_model_filepath, data_file_path, figures_folderpat
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
     )
     model.also_return_features = True
     project_dir = Path(__file__).resolve().parents[2]
@@ -124,7 +125,7 @@ def plot_tsne_test_set(trained_model_filepath, data_file_path, figures_folderpat
 def plot_class_distributions(
     training_data_filepath, test_data_filepath, figures_folderpath
 ):
-    """ Plots the training set and test set class distributions """
+    """Plots the training set and test set class distributions"""
     # Load the training and test data
     project_dir = Path(__file__).resolve().parents[2]
     train_set_path = str(project_dir) + training_data_filepath

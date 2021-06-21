@@ -1,7 +1,5 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 ## CONVOLUTIONAL LAYER NEURAL NETWORK
 
@@ -26,6 +24,7 @@ class Classifier(nn.Module):
         pool,
         fc_1,
         fc_2,
+        activation,
     ):
         super(Classifier, self).__init__()
         self.num_classes = num_classes
@@ -33,14 +32,15 @@ class Classifier(nn.Module):
         self.filter1_out = filter1_out
         self.filter2_out = filter2_out
         self.filter3_out = filter3_out
-        self.kernel = kernel
-        self.pool = pool
         self.height = height
         self.width = width
-        self.fc_1 = fc_1
-        self.fc_2 = fc_2
         self.pad = pad
         self.stride = stride
+        self.kernel = kernel
+        self.pool = pool
+        self.fc_1 = fc_1
+        self.fc_2 = fc_2
+        self.activation = activation
         self.also_return_features = False
 
         # First convolution
@@ -105,14 +105,31 @@ class Classifier(nn.Module):
         if x.ndim != 4:
             raise ValueError("Expected input to be a 4D tensor")
 
-        x = self.pool1(F.relu(self.conv1(x)))
-        x = self.pool2(F.relu(self.conv2(x)))
-        x = F.relu(self.conv3(x))
+        if self.activation == "relu":
+            x = self.pool1(F.relu(self.conv1(x)))
+            x = self.pool2(F.relu(self.conv2(x)))
+            x = F.relu(self.conv3(x))
 
-        x = x.view(-1, self.filter3_out * self.conv5_out_height * self.conv5_out_width)
+            x = x.view(
+                -1, self.filter3_out * self.conv5_out_height * self.conv5_out_width
+            )
 
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
+            x = F.relu(self.fc1(x))
+            x = F.relu(self.fc2(x))
+        elif self.activation == "leaky_relu":
+            x = self.pool1(F.leaky_relu(self.conv1(x)))
+            x = self.pool2(F.leaky_relu(self.conv2(x)))
+            x = F.leaky_relu(self.conv3(x))
+
+            x = x.view(
+                -1, self.filter3_out * self.conv5_out_height * self.conv5_out_width
+            )
+
+            x = F.leaky_relu(self.fc1(x))
+            x = F.leaky_relu(self.fc2(x))
+
+        else:
+            raise ValueError("Activation function not supported")
 
         # Store the abstract features at this point
         features = x

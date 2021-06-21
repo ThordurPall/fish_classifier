@@ -10,9 +10,7 @@ from src.models.train_model import train_model
 
 
 class TestTraining:
-    @pytest.mark.parametrize(
-        "epochs,learning_rate", [(1, 0.01), (1, 0.1), (2, 0.001), (3, 0.001)]
-    )
+    @pytest.mark.parametrize("epochs,learning_rate", [(1, 0.1), (2, 0.001)])
     def test_training(self, epochs, learning_rate):
         """
         Test the fish classifier training script

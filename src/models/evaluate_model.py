@@ -39,6 +39,7 @@ def evaluate_model(
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
     )
     project_dir = Path(__file__).resolve().parents[2]
     state_dict = torch.load(
@@ -87,4 +88,3 @@ def evaluate_model(
             test_correct += equals.type(torch.FloatTensor).sum().item()
         test_accuracy = test_correct / len(test_set)
     return test_accuracy
-

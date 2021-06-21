@@ -4,9 +4,9 @@ class Hyperparameters:
         config={
             "batch_size": 64,
             "num_classes": 9,
-            "rgb": 3,
             "image_height": 128,
             "image_width": 128,
+            "rgb": 3,
             "filter1_in": 3,
             "filter1_out": 6,
             "kernel": 2,
@@ -18,7 +18,8 @@ class Hyperparameters:
             "pad": 0,
             "stride": 1,
             "lr": 0.001,
-            "epochs": 30,
+            "epochs": 10,
+            "activation": "relu",
         },
     ):
         super().__init__()
