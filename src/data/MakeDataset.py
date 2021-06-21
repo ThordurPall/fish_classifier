@@ -8,8 +8,9 @@ import gdown
 import numpy as np
 import torch
 from PIL import Image
-from src.utils.DataTransforms import DataTransforms as dt
+
 from src.utils.AugmentationPipeline import AugmentationPipeline as ap
+from src.utils.DataTransforms import DataTransforms as dt
 
 
 class MakeDataset:
