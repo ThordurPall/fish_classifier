@@ -14,8 +14,11 @@ def hyperparameter_tuning_hydra(config):
     log = logging.getLogger(__name__)
     log.info(f"Current configuration: \n {OmegaConf.to_yaml(config)}")
     print(config)
-    hype = config.optuna  # Current set of hyperparameters
-    print(hype)
+    bounds = config.optuna  # Current set of optuna bounds
+    print(bounds)
+    learning_rate_min = bounds.learning_rate.min
+    print(learning_rate_min)
+    print(bounds.learning_rate.max)
 
 
 if __name__ == "__main__":
