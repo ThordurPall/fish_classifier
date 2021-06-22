@@ -43,7 +43,7 @@ def train_model(
 
     run = None
     if use_azure:
-        make_data = MakeDataset()
+        make_data = MakeDataset(generated_images_per_image=60)
         make_data.make_dataset()
         print("Dataset created")
 
