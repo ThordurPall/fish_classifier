@@ -31,7 +31,11 @@ def hyperparameter_tuning_hydra(config):
         direction="maximize",
     )
     study.optimize(
-        lambda trial: optuna_objective(trial, paths=paths, optuna_settings=bounds,),
+        lambda trial: optuna_objective(
+            trial,
+            paths=paths,
+            optuna_settings=bounds,
+        ),
         n_trials=3,
     )
 
@@ -73,13 +77,15 @@ def hyperparameter_tuning_hydra(config):
 
 
 def optuna_objective(
-    trial, paths, optuna_settings,
+    trial,
+    paths,
+    optuna_settings,
 ):
     # Suggest a set of hyperparameters
     learning_rate = trial.suggest_loguniform(
         "learning_rate",
         optuna_settings.learning_rate.min,
-        optuna_settings.learning_rate.min,
+        optuna_settings.learning_rate.max,
     )
     dropout_p = trial.suggest_uniform(
         "dropout_p", optuna_settings.dropout_p.min, optuna_settings.dropout_p.max

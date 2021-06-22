@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
+import glob
+import os.path
 
 from azureml.core import (ComputeTarget, Environment, Experiment, Model,
                           ScriptRunConfig, Workspace)
@@ -34,7 +35,14 @@ def main():
             "optuna",
         ],
     )
-    whl_path = "./dist/src-0.1.18-py3-none-any.whl"
+
+    folder_path = "./dist"
+    file_type = "/*"
+    files = glob.glob(folder_path + file_type)
+
+    latest_whl = max(files, key=os.path.getctime)
+
+    whl_path = latest_whl
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
