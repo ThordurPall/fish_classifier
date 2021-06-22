@@ -1,5 +1,3 @@
-import os
-import pickle
 from pathlib import Path
 
 import optuna
@@ -7,7 +5,6 @@ import torch
 from torch import nn, optim
 from torch.utils.data import random_split
 
-from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
 

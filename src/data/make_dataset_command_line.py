@@ -8,22 +8,43 @@ from src.data.MakeDataset import MakeDataset
 
 @click.command()
 @click.option(
-    "-fu", "--force_unzip", type=bool, default=False, help="Force unzip of the data"
+    "-fu/-np-fu",
+    "--force_unzip/--no_force_unzip",
+    type=bool,
+    default=False,
+    help="Force unzip of the data",
 )
 @click.option(
-    "-fd",
-    "--force_download",
+    "-fd/-no-fd",
+    "--force_download/--no_force_download",
     type=bool,
     default=False,
     help="Force download of the data",
 )
 @click.option(
-    "-fp", "--force_process", type=bool, default=False, help="Force process of the data"
+    "-fp/-no-fp",
+    "--force_process/--no_force_process",
+    type=bool,
+    default=False,
+    help="Force process of the data",
 )
 @click.option(
-    "-csv", "--add_csv_file", type=bool, default=False, help="Converts the data to csv"
+    "-csv/-no-csv",
+    "--add_csv_file/--no_add_csv_file",
+    type=bool,
+    default=False,
+    help="Converts the data to csv",
 )
-def main(force_unzip, force_download, force_process, add_csv_file):
+@click.option(
+    "-gpi",
+    "--generations_per_image",
+    type=int,
+    default=1,
+    help="specifiy the number of images generated per images",
+)
+def main(
+    force_unzip, force_download, force_process, add_csv_file, generations_per_image
+):
     """Runs data processing scripts to turn raw data from (../raw) into
     cleaned data ready to be analyzed (saved in ../processed).
     """
@@ -34,7 +55,7 @@ def main(force_unzip, force_download, force_process, add_csv_file):
         force_download=force_download,
         force_unzip=force_unzip,
         image_size=128,
-        generated_images_per_image=100,
+        generated_images_per_image=generations_per_image,
         add_csv_file=add_csv_file,
     )
     make_data.make_dataset()
