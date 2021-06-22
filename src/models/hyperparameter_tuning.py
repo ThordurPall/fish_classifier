@@ -32,7 +32,7 @@ def hyperparameter_tuning_hydra(config):
     )
     study.optimize(
         lambda trial: optuna_objective(trial, paths=paths, optuna_settings=bounds,),
-        n_trials=1,
+        n_trials=3,
     )
 
     # Plot optimization history of all trials in a study
@@ -80,7 +80,7 @@ def optuna_objective(
     learning_rate = trial.suggest_loguniform(
         "learning_rate",
         optuna_settings.learning_rate.min,
-        optuna_settings.learning_rate.min,
+        optuna_settings.learning_rate.max,
     )
     dropout_p = trial.suggest_uniform(
         "dropout_p", optuna_settings.dropout_p.min, optuna_settings.dropout_p.max
