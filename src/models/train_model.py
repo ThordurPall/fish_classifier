@@ -9,7 +9,7 @@ from azureml.core import Run
 from torch import nn, optim
 from torch.utils.data import random_split
 
-from src.data.MakeDataset import MakeDataset
+# from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
 
@@ -19,7 +19,7 @@ def train_model(
     training_statistics_filepath,
     training_figures_filepath,
     use_azure=False,
-    epochs=10,
+    epochs=1,
     learning_rate=0.001,
 ):
 
@@ -31,8 +31,8 @@ def train_model(
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     if use_azure:
-        make_data = MakeDataset()
-        make_data.make_dataset()
+        # make_data = MakeDataset()
+        # make_data.make_dataset()
         print("Dataset created")
 
         # Get the experiment run context. That is, retrieve the experiment

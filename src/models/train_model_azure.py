@@ -2,22 +2,27 @@
 import os
 
 from azureml.core import (ComputeTarget, Environment, Experiment, Model,
-                          ScriptRunConfig, Workspace)
+                          ScriptRunConfig, Workspace, )
 from azureml.core.conda_dependencies import CondaDependencies
 
 
 def main():
     # Create a Python environment for the experiment
-    env = Environment("experiment-fish-classifier-test")
+    env = Environment("mlops_project")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "MLOpsGPU")
+    compute_target = ComputeTarget(ws, "agicksgpu")
     print("Ready to use compute target: {}".format(compute_target.name))
 
+    print("Downloading training set")
+    # dataset = Dataset.get_by_name(ws, name='fish_classifier_training_set')
+    # dataset.download(target_path='./data/processed/', overwrite=False)
+
+    print("Finished downloading training set")
     # Ensure the required packages are installed
     packages = CondaDependencies.create(
         conda_packages=["pip"],

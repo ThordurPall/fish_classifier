@@ -42,6 +42,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
+*.pdf
 
 # Translations
 *.mo
@@ -93,3 +94,4 @@ target/
 /models/
 # Azure
 config.json
+azure-downloaded-files/

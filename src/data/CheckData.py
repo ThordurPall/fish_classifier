@@ -17,9 +17,11 @@ def check_data():
         mapping = json.load(json_file)
     print(mapping)
 
+    randomInt = random.randint(0, train_imgs.shape[0] - 1)
+    print(train_labels[randomInt])
     plt.imshow(
         kornia.utils.tensor_to_image(
-            train_imgs[random.randint(0, train_imgs.shape[0] - 1)]
+            train_imgs[randomInt]
         )
     )
     plt.show()
