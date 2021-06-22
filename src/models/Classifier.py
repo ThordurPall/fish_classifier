@@ -25,6 +25,7 @@ class Classifier(nn.Module):
         fc_1,
         fc_2,
         activation,
+        dropout_p=0.25,
     ):
         super(Classifier, self).__init__()
         self.num_classes = num_classes
@@ -99,6 +100,9 @@ class Classifier(nn.Module):
         self.fc2 = nn.Linear(fc_1, fc_2)
         self.fc3 = nn.Linear(fc_2, self.num_classes)
 
+        # Dropout module with dropout_p drop probability
+        self.dropout = nn.Dropout(p=dropout_p)
+
     def forward(self, x):
 
         # Chack that there are batch, channel, width and height dimensions
@@ -113,9 +117,9 @@ class Classifier(nn.Module):
             x = x.view(
                 -1, self.filter3_out * self.conv5_out_height * self.conv5_out_width
             )
+            x = self.dropout(F.relu(self.fc1(x)))
+            x = self.dropout(F.relu(self.fc2(x)))
 
-            x = F.relu(self.fc1(x))
-            x = F.relu(self.fc2(x))
         elif self.activation == "leaky_relu":
             x = self.pool1(F.leaky_relu(self.conv1(x)))
             x = self.pool2(F.leaky_relu(self.conv2(x)))
@@ -124,9 +128,8 @@ class Classifier(nn.Module):
             x = x.view(
                 -1, self.filter3_out * self.conv5_out_height * self.conv5_out_width
             )
-
-            x = F.leaky_relu(self.fc1(x))
-            x = F.leaky_relu(self.fc2(x))
+            x = self.dropout(F.leaky_relu(self.fc1(x)))
+            x = self.dropout(F.leaky_relu(self.fc2(x)))
 
         else:
             raise ValueError("Activation function not supported")

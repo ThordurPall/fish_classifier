@@ -1,0 +1,5 @@
+defaults:
+  - final_model: hyperparameters
+  - optuna: trial_settings
+  - paths: paths
+  - azure: azure
