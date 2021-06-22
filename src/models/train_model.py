@@ -4,6 +4,8 @@ import pickle
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy as np
+import optuna
 import torch
 from azureml.core import Run
 from torch import nn, optim
@@ -21,6 +23,10 @@ def train_model(
     use_azure=False,
     epochs=10,
     learning_rate=0.001,
+    dropout_p=0.25,
+    batch_size=64,
+    seed=0,
+    trial=None,
 ):
 
     # Check if there is a GPU available to use
@@ -29,6 +35,10 @@ def train_model(
     else:
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    # Set the seed for reproducibility
+    torch.manual_seed(0)
+    np.random.seed(0)
 
     if use_azure:
         make_data = MakeDataset()
@@ -54,7 +64,7 @@ def train_model(
     train_set = torch.utils.data.TensorDataset(train_imgs, train_labels)
 
     # split data in training and validation set
-    train_n = int(0.65 * len(train_set))
+    train_n = int(0.85 * len(train_set))
     val_n = len(train_set) - train_n
     train_data, val_data = random_split(train_set, [train_n, val_n])
     print(f"Length of Train Data : {len(train_data)}")
@@ -96,6 +106,7 @@ def train_model(
         hype["fc_1"],
         hype["fc_2"],
         hype["activation"],
+        dropout_p=dropout_p,
     )
     model = model.to(device)
 
@@ -172,6 +183,14 @@ def train_model(
                 + str("Validation Loss: {:.3f}.. ".format(val_losses[-1]))
                 + str("Validation Accuracy: {:.3f}.. ".format(val_accuracies[-1]))
             )
+
+        if trial:
+            # Report intermediate objective value
+            trial.report(val_accuracies[-1], e)
+
+            # Handle pruning based on the intermediate value
+            if trial.should_prune():
+                raise optuna.TrialPruned()
 
     # Set file paths depending on running locally or on Azure
     model_path = project_dir.joinpath(trained_model_filepath)
