@@ -27,7 +27,7 @@ def train_model(
     batch_size=64,
     seed=0,
     trial=None,
-    save_results=True,
+    save_training_results=True,
 ):
 
     # Check if there is a GPU available to use
@@ -202,7 +202,7 @@ def train_model(
         "val_accuracies": val_accuracies,
     }
 
-    if save_results:
+    if save_training_results:
         save_results(
             project_dir,
             trained_model_filepath,
