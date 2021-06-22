@@ -37,8 +37,8 @@ def train_model(
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # Set the seed for reproducibility
-    torch.manual_seed(0)
-    np.random.seed(0)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
 
     if use_azure:
         make_data = MakeDataset()
