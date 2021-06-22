@@ -23,8 +23,7 @@ def train_model(
     use_azure=False,
     epochs=10,
     learning_rate=0.001,
-    dropout_p=0.25,
-    batch_size=64,
+    dropout_p=0.0,
     seed=0,
     trial=None,
 ):
@@ -35,7 +34,7 @@ def train_model(
     else:
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+    seed = 0
     # Set the seed for reproducibility
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -50,6 +49,7 @@ def train_model(
         run = Run.get_context()
         run.log("Learning rate", learning_rate)
         run.log("Epochs", epochs)
+        run.log("Dropout", dropout_p)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -106,7 +106,7 @@ def train_model(
         hype["fc_1"],
         hype["fc_2"],
         hype["activation"],
-        dropout_p=dropout_p,
+        dropout_p,
     )
     model = model.to(device)
 
@@ -116,6 +116,7 @@ def train_model(
     # Implement the training loop
     print("Start training")
     train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
+    print("FIND THIS IN THE LOGS")
     for e in range(epochs):
         train_loss = 0
         train_correct = 0

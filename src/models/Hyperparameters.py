@@ -20,6 +20,7 @@ class Hyperparameters:
             "lr": 0.0013,
             "epochs": 10,
             "activation": "leaky_relu",
+            "dropout_p": 0.0,
         },
     ):
         super().__init__()

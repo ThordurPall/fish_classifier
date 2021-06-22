@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 
-from azureml.core import (ComputeTarget, Environment, Experiment, Model,
-                          ScriptRunConfig, Workspace)
+from azureml.core import (
+    ComputeTarget,
+    Environment,
+    Experiment,
+    Model,
+    ScriptRunConfig,
+    Workspace,
+)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -31,9 +37,10 @@ def main():
             "kornia",
             "gdown",
             "pillow",
+            "optuna",
         ],
     )
-    whl_path = "./dist/src-0.1.14-py3-none-any.whl"
+    whl_path = "./dist/src-0.1.18-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
@@ -53,7 +60,17 @@ def main():
     experiment_folder = "./src/models"
     e = 30
     lr = 0.001
-    script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
+    dropout_p = 0.0
+    script_args = [
+        "--epochs",
+        e,
+        "--learning_rate",
+        lr,
+        "--use_azure",
+        True,
+        "--dropout_p",
+        dropout_p,
+    ]
     script_config = ScriptRunConfig(
         source_directory=experiment_folder,
         script="train_model_command_line.py",
@@ -85,6 +102,7 @@ def main():
     model_props = {
         "epochs": e,
         "learning_rate": lr,
+        "dropout_p": dropout_p,
         "Final train loss": metrics["Train loss"][-1],
         "Final train accuracy": metrics["Train accuracy"][-1],
         "Final validation loss": metrics["Validation loss"][-1],
