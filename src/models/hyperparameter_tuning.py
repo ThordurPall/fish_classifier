@@ -10,10 +10,10 @@ from omegaconf import OmegaConf
 
 from src.models.train_model import train_model
 
-project_dir = Path(__file__).resolve().parents[2]
+project_dir = str(Path(__file__).resolve().parents[2])
 
 
-@hydra.main(config_path=str(project_dir) + "/config", config_name="config")
+@hydra.main(config_path=project_dir + "/config", config_name="config")
 def hyperparameter_tuning_hydra(config):
     log = logging.getLogger(__name__)
     log.info(f"Current configuration: \n {OmegaConf.to_yaml(config)}")
@@ -32,11 +32,12 @@ def hyperparameter_tuning_hydra(config):
     )
     study.optimize(
         lambda trial: optuna_objective(trial, paths=paths, optuna_settings=bounds,),
-        n_trials=3,
+        n_trials=1,
     )
 
     # Plot optimization history of all trials in a study
-    training_figures_filepath = paths.training_figures_filepath
+    training_figures_filepath = project_dir + "/" + paths.training_figures_filepath
+    print(training_figures_filepath)
     fig = optuna.visualization.plot_optimization_history(study)
     pio.write_image(fig, training_figures_filepath + "optuna_optimization_history.pdf")
 
