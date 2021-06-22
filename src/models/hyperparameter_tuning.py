@@ -10,10 +10,11 @@ from omegaconf import OmegaConf
 
 from src.models.train_model import train_model
 
-project_dir = str(Path(__file__).resolve().parents[2])
+project_dir = Path(__file__).resolve().parents[2]
+project_dir_str = str(project_dir)
 
 
-@hydra.main(config_path=project_dir + "/config", config_name="config")
+@hydra.main(config_path=project_dir_str + "/config", config_name="config")
 def hyperparameter_tuning_hydra(config):
     log = logging.getLogger(__name__)
     log.info(f"Current configuration: \n {OmegaConf.to_yaml(config)}")

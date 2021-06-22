@@ -214,7 +214,7 @@ def train_model(
             run,
         )
 
-    if use_azure:
+    if use_azure and not trial:
         # Complete the run
         run.complete()
         print("Completed running the training expriment")
