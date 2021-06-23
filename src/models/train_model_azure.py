@@ -3,13 +3,8 @@ import glob
 import os.path
 
 import click
-from azureml.core import (
-    ComputeTarget,
-    Environment,
-    Experiment,
-    ScriptRunConfig,
-    Workspace,
-)
+from azureml.core import (ComputeTarget, Environment, Experiment,
+                          ScriptRunConfig, Workspace)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -38,10 +33,9 @@ def main(use_optuna, train_final):
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "agicksgpu")
+    compute_target = ComputeTarget(ws, "MLOpsGPU")
     print("Ready to use compute target: {}".format(compute_target.name))
 
-    print("Finished downloading training set")
     # Ensure the required packages are installed
     packages = CondaDependencies.create(
         conda_packages=["pip"],
@@ -56,7 +50,7 @@ def main(use_optuna, train_final):
             "gdown",
             "pillow",
             "optuna",
-            "hydra" "hydra-core",
+            "hydra-core",
             "sklearn",
         ],
     )
@@ -137,9 +131,11 @@ def main(use_optuna, train_final):
         }
 
         # Verify the files have been downloaded
+        breakpoint()
         model_path = "./outputs/models/trained_model.pth"
         if train_final:
             model_path = add_train_final_dir()
+        breakpoint()
         run.register_model(
             model_path=model_path,
             model_name="fish-classifier",

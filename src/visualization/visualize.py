@@ -47,6 +47,8 @@ def plot_tsne_test_set(trained_model_filepath, data_file_path, figures_folderpat
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
+        dropout_p=0.25,
     )
     model.also_return_features = True
     project_dir = Path(__file__).resolve().parents[2]

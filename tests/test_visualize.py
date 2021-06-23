@@ -95,6 +95,6 @@ class TestVisualize:
         )
 
         # Test that the drift detection p-values are returned
-        assert 0.0 <= dict["PValuesValidationReal"] <= 1.0
-        assert 0.0 <= dict["PValuesValidationCorrupt"] <= 1.0
-        assert 0.0 <= dict["PValuesTestReal"] <= 1.0
+        assert 0.0 <= dict["PValuesValidationReal"][0] <= 1.0
+        assert 0.0 <= dict["PValuesValidationCorrupt"][0] <= 1.0
+        assert 0.0 <= dict["PValuesTestReal"][0] <= 1.0
