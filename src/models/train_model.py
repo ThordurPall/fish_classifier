@@ -3,6 +3,7 @@ import os
 import pickle
 from pathlib import Path
 
+import gdown
 import matplotlib.pyplot as plt
 import numpy as np
 import optuna
@@ -10,7 +11,6 @@ import torch
 from azureml.core import Run
 from torch import nn, optim
 from torch.utils.data import random_split
-import gdown
 
 # from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
