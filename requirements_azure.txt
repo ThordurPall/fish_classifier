@@ -10,6 +10,7 @@ kornia>=0.5.3
 gdown>=3.13.0
 azureml-core>=1.30.0
 optuna>=2.8.0
+hydra-core>=1.1.0
 flake8
 pillow
 pandas

@@ -93,3 +93,13 @@ target/
 /models/
 # Azure
 config.json
+*.png
+azure-downloaded-files
+outputs
+/trained_model.pth
+
+# Reports
+/reports/figures
+
+
+
