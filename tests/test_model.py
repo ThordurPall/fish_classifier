@@ -31,6 +31,7 @@ class TestModel:
             hype["fc_1"],
             hype["fc_2"],
             hype["activation"],
+            hype["dropout_p"],
         )
         x = model.forward(
             torch.rand(X, hype["rgb"], hype["image_height"], hype["image_width"])
@@ -68,6 +69,7 @@ class TestModel:
             hype["fc_1"],
             hype["fc_2"],
             hype["activation"],
+            hype["dropout_p"],
         )
 
         # Chack that there are batch, channel, width and height dimensions

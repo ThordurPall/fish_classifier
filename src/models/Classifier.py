@@ -24,7 +24,7 @@ class Classifier(nn.Module):
         fc_1,
         fc_2,
         activation,
-        dropout_p=0.25,
+        dropout_p,
     ):
         super(Classifier, self).__init__()
         self.num_classes = num_classes
@@ -41,6 +41,7 @@ class Classifier(nn.Module):
         self.fc_1 = fc_1
         self.fc_2 = fc_2
         self.activation = activation
+        self.dropout_p = dropout_p
         self.also_return_features = False
 
         # First convolution
@@ -100,7 +101,7 @@ class Classifier(nn.Module):
         self.fc3 = nn.Linear(fc_2, self.num_classes)
 
         # Dropout module with dropout_p drop probability
-        self.dropout = nn.Dropout(p=dropout_p)
+        self.dropout = nn.Dropout(p=self.dropout_p)
 
     def forward(self, x):
 

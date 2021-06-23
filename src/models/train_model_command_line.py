@@ -37,6 +37,13 @@ from src.models.train_model import train_model
     default=0.001,
     help="Learning rate for the PyTorch optimizer (default=0.001)",
 )
+@click.option(
+    "-d",
+    "--dropout_p",
+    type=float,
+    default=0.0,
+    help="Dropout rate (default=0.0)",
+)
 def train_model_command_line(
     trained_model_filepath,
     training_statistics_filepath,
@@ -44,6 +51,7 @@ def train_model_command_line(
     use_azure,
     epochs,
     learning_rate,
+    dropout_p,
 ):
     """Trains the neural network using MNIST training data"""
     _ = train_model(
@@ -53,6 +61,7 @@ def train_model_command_line(
         use_azure,
         epochs,
         learning_rate,
+        dropout_p,
     )
 
 
