@@ -3,8 +3,13 @@ import glob
 import os.path
 
 import click
-from azureml.core import (ComputeTarget, Environment, Experiment,
-                          ScriptRunConfig, Workspace)
+from azureml.core import (
+    ComputeTarget,
+    Environment,
+    Experiment,
+    ScriptRunConfig,
+    Workspace,
+)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -134,14 +139,7 @@ def main(use_optuna, train_final):
         # Verify the files have been downloaded
         model_path = "./outputs/models/trained_model.pth"
         if train_final:
-            model_path = "./outputs/"
-            for root, directories, filenames in os.walk(model_path, topdown=True):
-                model_path += directories[0]
-                break
-            for root, directories, filenames in os.walk(model_path, topdown=True):
-                model_path += directories[0]
-                break
-            model_path += "outputs/models/trained_model.pth"
+            model_path = add_train_final_dir()
         run.register_model(
             model_path=model_path,
             model_name="fish-classifier",
@@ -156,6 +154,18 @@ def main(use_optuna, train_final):
     for root, directories, filenames in os.walk(download_folder):
         for filename in filenames:
             print(os.path.join(root, filename))
+
+
+def add_train_final_dir():
+    model_path = "./outputs/"
+    for root, directories, filenames in os.walk(model_path, topdown=True):
+        model_path += directories[0]
+        break
+    for root, directories, filenames in os.walk(model_path, topdown=True):
+        model_path += directories[0]
+        break
+    model_path += "outputs/models/trained_model.pth"
+    return model_path
 
 
 if __name__ == "__main__":

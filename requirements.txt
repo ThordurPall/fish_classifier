@@ -15,3 +15,4 @@ pillow
 pandas
 numpy
 scikit-learn
+torchdrift
