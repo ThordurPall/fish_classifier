@@ -94,9 +94,6 @@ target/
 /models/
 # Azure
 config.json
-<<<<<<< HEAD
-azure-downloaded-files/
-=======
 *.png
 azure-downloaded-files
 outputs
@@ -107,4 +104,3 @@ outputs
 
 
 
->>>>>>> upstream/main
