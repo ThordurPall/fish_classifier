@@ -21,10 +21,11 @@ def train_model(
     training_statistics_filepath,
     training_figures_filepath,
     use_azure=False,
-    epochs=10,
+    epochs=30,
     learning_rate=0.001,
     dropout_p=0.0,
-    batch_size=50,
+    batch_size=64,
+    activation="relu",
     seed=0,
     trial=None,
     save_training_results=True,
@@ -53,6 +54,7 @@ def train_model(
         run.log("Learning rate", learning_rate)
         run.log("Epochs", epochs)
         run.log("Dropout", dropout_p)
+        run.log("activation function", activation)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -108,7 +110,7 @@ def train_model(
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
-        hype["activation"],
+        activation,
         dropout_p,
     )
     model = model.to(device)

@@ -115,10 +115,12 @@ def optuna_objective(
         optuna_settings.batch_size.max,
         optuna_settings.batch_size.discretization_step,
     )
+    activation = trial.suggest_categorical("activation", ["relu", "leaky_relu"])
 
     print(f"Current learning rate: \n {learning_rate}")
     print(f"Current dropout: \n {dropout_p}")
     print(f"Current batch size: \n {batch_size}")
+    print(f"Current activation function: \n {activation}")
 
     train_val_dict = train_model(
         trained_model_filepath=paths.trained_model_filepath,
@@ -128,7 +130,8 @@ def optuna_objective(
         epochs=optuna_settings.epochs,
         learning_rate=learning_rate,
         dropout_p=dropout_p,
-        batch_size=batch_size,
+        batch_size=int(batch_size),
+        activation=activation,
         seed=optuna_settings.seed,
         trial=trial,
         save_training_results=False,

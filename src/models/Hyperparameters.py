@@ -2,7 +2,7 @@ class Hyperparameters:
     def __init__(
         self,
         config={
-            "batch_size": 50,
+            "batch_size": 64,
             "num_classes": 9,
             "image_height": 128,
             "image_width": 128,
@@ -17,9 +17,9 @@ class Hyperparameters:
             "fc_2": 84,
             "pad": 0,
             "stride": 1,
-            "lr": 0.0013,
-            "epochs": 10,
-            "activation": "leaky_relu",
+            "lr": 0.001,
+            "epochs": 30,
+            "activation": "relu",
             "dropout_p": 0.0,
         },
     ):

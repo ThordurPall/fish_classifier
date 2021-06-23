@@ -27,7 +27,7 @@ from src.models.train_model import train_model
     "-e",
     "--epochs",
     type=int,
-    default=10,
+    default=30,
     help="Number of training epochs (default=10)",
 )
 @click.option(
@@ -41,8 +41,15 @@ from src.models.train_model import train_model
     "-d",
     "--dropout_p",
     type=float,
-    default=0.0,
+    default=0.25,
     help="Dropout rate (default=0.0)",
+)
+@click.option(
+    "-a",
+    "--activation",
+    type=str,
+    default="leaky_relu",
+    help="Activation function (default: relu)",
 )
 def train_model_command_line(
     trained_model_filepath,
@@ -52,6 +59,7 @@ def train_model_command_line(
     epochs,
     learning_rate,
     dropout_p,
+    activation,
 ):
     """Trains the neural network using MNIST training data"""
     _ = train_model(
@@ -62,6 +70,7 @@ def train_model_command_line(
         epochs,
         learning_rate,
         dropout_p,
+        activation,
     )
 
 

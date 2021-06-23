@@ -3,8 +3,14 @@ import glob
 import os.path
 
 import click
-from azureml.core import (ComputeTarget, Environment, Experiment, Model,
-                          ScriptRunConfig, Workspace)
+from azureml.core import (
+    ComputeTarget,
+    Environment,
+    Experiment,
+    Model,
+    ScriptRunConfig,
+    Workspace,
+)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -17,17 +23,16 @@ from azureml.core.conda_dependencies import CondaDependencies
     help="Set to True to use Optuna for hyperparameter tuning (default is False)",
 )
 def main(use_optuna):
-    print(use_optuna)
 
     # Create a Python environment for the experiment
-    env = Environment("experiment-fish-classifier-hyperparameter-tuning")
+    env = Environment("Train-initial-model")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "MLOpsGPU")
+    compute_target = ComputeTarget(ws, "FirstMachine1")
     print("Ready to use compute target: {}".format(compute_target.name))
 
     # Ensure the required packages are installed
@@ -66,8 +71,8 @@ def main(use_optuna):
     # Create a script config for training
     experiment_folder = "./src/models"
 
-    script_args = None
     if use_optuna:
+        script_args = None
         script = "hyperparameter_tuning.py"
     else:
         script = "train_model_command_line.py"
@@ -94,9 +99,7 @@ def main(use_optuna):
     )
 
     # Create and submit the experiment
-    experiment = Experiment(
-        workspace=ws, name="experiment-fish-classifier-hyperparameter-tuning"
-    )
+    experiment = Experiment(workspace=ws, name="Train-initial-model")
     run = experiment.submit(config=script_config)
 
     # Block until the experiment run has completed
@@ -127,8 +130,8 @@ def main(use_optuna):
         }
         run.register_model(
             model_path="./outputs/models/trained_model.pth",
-            model_name="fish-classifier-test",
-            tags={"Training data": "fish-classifier-test"},
+            model_name="Train-initial-model",
+            tags={"Training data": "Train-initial-model"},
             properties=model_props,
         )
 
