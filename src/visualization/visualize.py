@@ -9,7 +9,8 @@ import torch
 import torchdrift
 from sklearn.manifold import TSNE, Isomap
 from torch.utils.data import random_split
-from torchdrift.detectors.mmd import ExpKernel, GaussianKernel, RationalQuadraticKernel
+from torchdrift.detectors.mmd import (ExpKernel, GaussianKernel,
+                                      RationalQuadraticKernel)
 
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
@@ -348,4 +349,3 @@ def calculate_plot_drift(features, drift_detector, figure_title, figure_file_pat
         figure_file_path, bbox_inches="tight",
     )
     return score, p_val
-

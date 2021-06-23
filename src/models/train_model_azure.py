@@ -3,13 +3,8 @@ import glob
 import os.path
 
 import click
-from azureml.core import (
-    ComputeTarget,
-    Environment,
-    Experiment,
-    ScriptRunConfig,
-    Workspace,
-)
+from azureml.core import (ComputeTarget, Environment, Experiment,
+                          ScriptRunConfig, Workspace)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -29,8 +24,6 @@ from azureml.core.conda_dependencies import CondaDependencies
     help="Set to True to trian the final model (default is False)",
 )
 def main(use_optuna, train_final):
-    print(train_final)
-
     # Create a Python environment for the experiment
     # env = Environment("mlops_project")
     env = Environment("experiment-fish-classifier-final-model")
@@ -42,10 +35,6 @@ def main(use_optuna, train_final):
     # Set the compute target
     compute_target = ComputeTarget(ws, "agicksgpu")
     print("Ready to use compute target: {}".format(compute_target.name))
-
-    print("Downloading training set")
-    # dataset = Dataset.get_by_name(ws, name='fish_classifier_training_set')
-    # dataset.download(target_path='./data/processed/', overwrite=False)
 
     print("Finished downloading training set")
     # Ensure the required packages are installed
@@ -62,8 +51,7 @@ def main(use_optuna, train_final):
             "gdown",
             "pillow",
             "optuna",
-            "hydra"
-            "hydra-core",
+            "hydra" "hydra-core",
             "sklearn",
         ],
     )
@@ -143,7 +131,6 @@ def main(use_optuna, train_final):
             "Final validation accuracy": metrics["Validation accuracy"][-1],
         }
 
-        breakpoint()
         # Verify the files have been downloaded
         model_path = "./outputs/models/trained_model.pth"
         if train_final:
@@ -155,14 +142,12 @@ def main(use_optuna, train_final):
                 model_path += directories[0]
                 break
             model_path += "outputs/models/trained_model.pth"
-        breakpoint()
         run.register_model(
             model_path=model_path,
             model_name="fish-classifier",
             tags={"Training data": "fish-classifier"},
             properties=model_props,
         )
-        breakpoint()
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"
     run.download_files(prefix="outputs", output_directory=download_folder)
