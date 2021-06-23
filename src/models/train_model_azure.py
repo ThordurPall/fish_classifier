@@ -3,7 +3,7 @@ import glob
 import os.path
 
 import click
-from azureml.core import (ComputeTarget, Environment, Experiment, Model,
+from azureml.core import (ComputeTarget, Environment, Experiment,
                           ScriptRunConfig, Workspace)
 from azureml.core.conda_dependencies import CondaDependencies
 
@@ -16,11 +16,19 @@ from azureml.core.conda_dependencies import CondaDependencies
     default=False,
     help="Set to True to use Optuna for hyperparameter tuning (default is False)",
 )
-def main(use_optuna):
-    print(use_optuna)
+@click.option(
+    "-tf/-no-tf",
+    "--train_final/--no_train_final",
+    type=bool,
+    default=False,
+    help="Set to True to trian the final model (default is False)",
+)
+def main(use_optuna, train_final):
+    print(train_final)
 
     # Create a Python environment for the experiment
-    env = Environment("mlops_project")
+    # env = Environment("mlops_project")
+    env = Environment("experiment-fish-classifier-final-model")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
@@ -75,6 +83,8 @@ def main(use_optuna):
     script_args = None
     if use_optuna:
         script = "hyperparameter_tuning.py"
+    elif train_final:
+        script = "train_test.py"
     else:
         script = "train_model_command_line.py"
         e = 50
@@ -100,9 +110,7 @@ def main(use_optuna):
     )
 
     # Create and submit the experiment
-    experiment = Experiment(
-        workspace=ws, name="experiment-fish-classifier-hyperparameter-tuning"
-    )
+    experiment = Experiment(workspace=ws, name="experiment-fish-classifier-final-model")
     run = experiment.submit(config=script_config)
 
     # Block until the experiment run has completed
@@ -133,21 +141,10 @@ def main(use_optuna):
         }
         run.register_model(
             model_path="./outputs/models/trained_model.pth",
-            model_name="fish-classifier-test",
-            tags={"Training data": "fish-classifier-test"},
+            model_name="fish-classifier",
+            tags={"Training data": "fish-classifier"},
             properties=model_props,
         )
-
-        # List registered models
-        for model in Model.list(ws):
-            print(model.name, "version:", model.version)
-            for tag_name in model.tags:
-                tag = model.tags[tag_name]
-                print("\t", tag_name, ":", tag)
-            for prop_name in model.properties:
-                prop = model.properties[prop_name]
-                print("\t", prop_name, ":", prop)
-            print("\n")
 
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"

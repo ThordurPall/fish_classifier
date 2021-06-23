@@ -1,7 +1,7 @@
-learning_rate: 0.0004535
-batch_size: 450.0
+learning_rate: 0.00038434
+batch_size: 250
 activation: "leaky_relu"
-dropout_p: 0.052
+dropout_p: 0.021
 seed: 0
-epochs: 30
+epochs: 20
 use_azure: True
