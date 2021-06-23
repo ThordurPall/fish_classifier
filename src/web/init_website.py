@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # import numpy as np
 import torch
 import torchvision.transforms as transforms
-from bottle import Bottle, request # , response, route, static_file
+from bottle import Bottle, request  # , response, route, static_file
 from PIL import Image
 from resizeimage import resizeimage
 
