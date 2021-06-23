@@ -1,14 +1,25 @@
 # -*- coding: utf-8 -*-
 import os
 
+import click
 from azureml.core import (ComputeTarget, Environment, Experiment, Model,
                           ScriptRunConfig, Workspace)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
-def main():
+@click.command()
+@click.option(
+    "-uo/-no-uo",
+    "--use_optuna/--no_use_optuna",
+    type=bool,
+    default=False,
+    help="Set to True to use Optuna for hyperparameter tuning (default is False)",
+)
+def main(use_optuna):
+    print(use_optuna)
+
     # Create a Python environment for the experiment
-    env = Environment("experiment-fish-classifier-test")
+    env = Environment("experiment-fish-classifier-hyperparameter-tuning")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
@@ -31,82 +42,84 @@ def main():
             "kornia",
             "gdown",
             "pillow",
+            "optuna",
+            "hydra-core",
+            "sklearn",
         ],
     )
-    whl_path = "./dist/src-0.1.14-py3-none-any.whl"
+    whl_path = "./dist/src-0.1.31-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
     packages.add_pip_package(whl_url)
     env.python.conda_dependencies = packages
 
-    # From a pip requirements file - Ensuring the required packages are installed
-    # env = Environment.from_pip_requirements(
-    #    name="experiment-fish-classifier-test-2", file_path="./requirements_azure.txt"
-    # )
-
-    # Add the private Python package
-    # whl_path = "./dist/src-0.1.7-py3-none-any.whl"
-    # env.add_private_pip_wheel(workspace=ws, exist_ok=True, file_path=whl_path)
-
     # Create a script config for training
     experiment_folder = "./src/models"
-    e = 30
-    lr = 0.001
-    script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
+    script_args = None
+    if use_optuna:
+        script = "hyperparameter_tuning.py"
+    else:
+        script = "train_model_command_line.py"
+        e = 30
+        lr = 0.001
+        script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
     script_config = ScriptRunConfig(
         source_directory=experiment_folder,
-        script="train_model_command_line.py",
+        script=script,
         environment=env,
         arguments=script_args,
         compute_target=compute_target,
     )
 
     # Create and submit the experiment
-    experiment = Experiment(workspace=ws, name="fish-classifier-training-test")
+    experiment = Experiment(
+        workspace=ws, name="experiment-fish-classifier-hyperparameter-tuning"
+    )
     run = experiment.submit(config=script_config)
 
     # Block until the experiment run has completed
     run.wait_for_completion()
     print("Finished running the training script")
 
-    # Get logged metrics and files
-    print("Getting run metrics")
-    metrics = run.get_metrics()
-    for key in metrics.keys():
-        print(key, metrics.get(key))
-    print("\n")
-
-    print("Getting run files")
-    for file in run.get_file_names():
-        print(file)
-
-    # Register the model
-    model_props = {
-        "epochs": e,
-        "learning_rate": lr,
-        "Final train loss": metrics["Train loss"][-1],
-        "Final train accuracy": metrics["Train accuracy"][-1],
-        "Final validation loss": metrics["Validation loss"][-1],
-        "Final validation accuracy": metrics["Validation accuracy"][-1],
-    }
-    run.register_model(
-        model_path="./outputs/models/trained_model.pth",
-        model_name="fish-classifier-test",
-        tags={"Training data": "fish-classifier-test"},
-        properties=model_props,
-    )
-
-    # List registered models
-    for model in Model.list(ws):
-        print(model.name, "version:", model.version)
-        for tag_name in model.tags:
-            tag = model.tags[tag_name]
-            print("\t", tag_name, ":", tag)
-        for prop_name in model.properties:
-            prop = model.properties[prop_name]
-            print("\t", prop_name, ":", prop)
+    if not use_optuna:
+        # Get logged metrics and files
+        print("Getting run metrics")
+        metrics = run.get_metrics()
+        for key in metrics.keys():
+            print(key, metrics.get(key))
         print("\n")
+
+        print("Getting run files")
+        for file in run.get_file_names():
+            print(file)
+
+        # Register the model
+        model_props = {
+            "epochs": e,
+            "learning_rate": lr,
+            "Final train loss": metrics["Train loss"][-1],
+            "Final train accuracy": metrics["Train accuracy"][-1],
+            "Final validation loss": metrics["Validation loss"][-1],
+            "Final validation accuracy": metrics["Validation accuracy"][-1],
+        }
+        run.register_model(
+            model_path="./outputs/models/trained_model.pth",
+            model_name="fish-classifier-test",
+            tags={"Training data": "fish-classifier-test"},
+            properties=model_props,
+        )
+
+        # List registered models
+        for model in Model.list(ws):
+            print(model.name, "version:", model.version)
+            for tag_name in model.tags:
+                tag = model.tags[tag_name]
+                print("\t", tag_name, ":", tag)
+            for prop_name in model.properties:
+                prop = model.properties[prop_name]
+                print("\t", prop_name, ":", prop)
+            print("\n")
 
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"

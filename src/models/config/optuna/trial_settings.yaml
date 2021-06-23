@@ -3,4 +3,8 @@ batch_size: {min: 50, max: 500, discretization_step: 50}
 activation: ["relu", "leaky_relu"]
 dropout_p: {min: 0.0, max: 0.8}
 seed: 0
-epochs: 5
+epochs: 30
+use_azure: True
+n_trials: 100
+n_warmup_steps: 5
+n_startup_trials: 10
