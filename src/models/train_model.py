@@ -23,8 +23,8 @@ def train_model(
     use_azure=False,
     epochs=10,
     learning_rate=0.001,
-    dropout_p=0.25,
-    batch_size=64,
+    dropout_p=0.0,
+    batch_size=50,
     seed=0,
     trial=None,
     save_training_results=True,
@@ -36,7 +36,7 @@ def train_model(
     else:
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+    seed = 0
     # Set the seed for reproducibility
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -52,6 +52,7 @@ def train_model(
         run = Run.get_context()
         run.log("Learning rate", learning_rate)
         run.log("Epochs", epochs)
+        run.log("Dropout", dropout_p)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -74,7 +75,7 @@ def train_model(
 
     # Hyper parameters
     hype = hp().config
-    batch_size = hype["batch_size"]
+    batch_size = batch_size
     lr = learning_rate
     epochs = epochs
 
@@ -108,7 +109,7 @@ def train_model(
         hype["fc_1"],
         hype["fc_2"],
         hype["activation"],
-        dropout_p=dropout_p,
+        dropout_p,
     )
     model = model.to(device)
 
@@ -231,7 +232,7 @@ def save_results(
     use_azure,
     run,
 ):
-    """ Saves the relevant training images, the model, and the results """
+    """Saves the relevant training images, the model, and the results"""
     # Set file paths depending on running locally or on Azure
     model_path = project_dir.joinpath(trained_model_filepath)
     dict_path = project_dir.joinpath(training_statistics_filepath).joinpath(

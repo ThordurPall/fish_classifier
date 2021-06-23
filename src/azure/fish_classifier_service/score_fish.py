@@ -39,6 +39,8 @@ def init():
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
+        hype["dropout_p"],
     )
     state_dict = torch.load(model_path, map_location=torch.device(device))
     model.load_state_dict(state_dict)

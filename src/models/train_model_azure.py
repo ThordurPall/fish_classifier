@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import os
+import glob
+import os.path
 
 import click
 from azureml.core import (ComputeTarget, Environment, Experiment, Model,
@@ -47,7 +48,15 @@ def main(use_optuna):
             "sklearn",
         ],
     )
-    whl_path = "./dist/src-0.1.31-py3-none-any.whl"
+
+    folder_path = "./dist"
+    file_type = "/*"
+    files = glob.glob(folder_path + file_type)
+
+    latest_whl = max(files, key=os.path.getctime)
+
+    whl_path = latest_whl
+
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
@@ -56,6 +65,7 @@ def main(use_optuna):
 
     # Create a script config for training
     experiment_folder = "./src/models"
+
     script_args = None
     if use_optuna:
         script = "hyperparameter_tuning.py"
@@ -63,7 +73,18 @@ def main(use_optuna):
         script = "train_model_command_line.py"
         e = 30
         lr = 0.001
-        script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
+        dropout_p = 0.0
+        script_args = [
+            "--epochs",
+            e,
+            "--learning_rate",
+            lr,
+            "--use_azure",
+            True,
+            "--dropout_p",
+            dropout_p,
+        ]
+
     script_config = ScriptRunConfig(
         source_directory=experiment_folder,
         script=script,
@@ -88,6 +109,7 @@ def main(use_optuna):
         metrics = run.get_metrics()
         for key in metrics.keys():
             print(key, metrics.get(key))
+
         print("\n")
 
         print("Getting run files")

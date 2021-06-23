@@ -33,7 +33,7 @@ class MakeDataset:
         force_unzip=False,
         force_process=False,
         training_partition_percentage=0.85,
-        generated_images_per_image=1,
+        generated_images_per_image=60,
         image_size=128,
         add_csv_file=False,
     ):
