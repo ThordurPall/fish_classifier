@@ -119,7 +119,6 @@ def train_model(
     # Implement the training loop
     print("Start training")
     train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
-    print("FIND THIS IN THE LOGS")
     for e in range(epochs):
         train_loss = 0
         train_correct = 0
