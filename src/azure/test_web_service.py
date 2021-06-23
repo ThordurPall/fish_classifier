@@ -2,7 +2,6 @@
 
 import json
 
-import matplotlib.pyplot as plt
 import requests
 from azureml.core import Webservice, Workspace
 from PIL import Image

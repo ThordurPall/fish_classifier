@@ -1,9 +1,8 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-## CONVOLUTIONAL LAYER NEURAL NETWORK
 
-
+# CONVOLUTIONAL LAYER NEURAL NETWORK
 def compute_conv_dim(dim_size, kernel_size, padding, stride):
     return int((dim_size - kernel_size + 2 * padding) / stride + 1)
 
