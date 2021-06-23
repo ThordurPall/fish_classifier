@@ -13,7 +13,7 @@ from src.utils.DataTransforms import DataTransforms
 def init():
     global model
     # Get the path to the deployed model file
-    model_path = Model.get_model_path("fish-classifier-test")
+    model_path = Model.get_model_path("fish-classifier")
 
     # Check if there is a GPU available to use
     if torch.cuda.is_available():
@@ -63,15 +63,15 @@ def run(raw_data):
 
     # Define a mapping from class IDs to labels
     classes = {
-        "0": "Trout",
-        "1": "Shrimp",
-        "2": "Striped Red Mullet",
-        "3": "Gilt Head Bream",
-        "4": "Black Sea Sprat",
+        "0": "Shrimp",
+        "1": "Red Mullet",
+        "2": "Horse Mackerel",
+        "3": "Black Sea Sprat",
+        "4": "Striped Red Mullet",
         "5": "Sea Bass",
-        "6": "Red Sea Bream",
-        "7": "Red Mullet",
-        "8": "Horse Mackerel",
+        "6": "Trout",
+        "7": "Gilt Head Bream",
+        "8": "Red Sea Bream",
     }
     return json.dumps(
         {"Class": classes[str(top_class.item())], "Probability": str(top_probs.item())}

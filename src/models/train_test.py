@@ -5,7 +5,6 @@ from pathlib import Path
 import hydra
 from omegaconf import OmegaConf
 
-from src.models.evaluate_model import evaluate_model
 from src.models.train_model import train_model
 
 project_dir = Path(__file__).resolve().parents[2]

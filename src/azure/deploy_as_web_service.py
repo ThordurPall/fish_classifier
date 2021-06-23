@@ -13,7 +13,7 @@ def main():
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Get the latest fish classifier model
-    model = Model(ws, name="fish-classifier-test")
+    model = Model(ws, name="fish-classifier")
     print(model)
 
     # Set path for scoring script
