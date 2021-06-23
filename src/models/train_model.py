@@ -44,6 +44,7 @@ def train_model(
 
     project_dir = Path(__file__).resolve().parents[2]
 
+    run = None
     if use_azure:
         pathForData = str(project_dir) + "/data/processed/"
 
