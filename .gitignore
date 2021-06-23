@@ -10,7 +10,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-# dist/
+dist/
 downloads/
 eggs/
 .eggs/
@@ -42,6 +42,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
+*.pdf
 
 # Translations
 *.mo
