@@ -3,7 +3,7 @@ import glob
 import os.path
 
 import click
-from azureml.core import (ComputeTarget, Environment, Experiment, Model,
+from azureml.core import (ComputeTarget, Environment, Experiment,
                           ScriptRunConfig, Workspace)
 from azureml.core.conda_dependencies import CondaDependencies
 
