@@ -45,7 +45,7 @@ def train_model(
     project_dir = Path(__file__).resolve().parents[2]
 
     if use_azure:
-        pathForData = str(project_dir) + "data/processed/"
+        pathForData = str(project_dir) + "/data/processed/"
 
         gdown.download(
             "https://drive.google.com/uc?id=1c_3EFqYiO4VhF4SRfJorsY577PbmHnSy",
@@ -66,7 +66,7 @@ def train_model(
     logger = logging.getLogger(__name__)
     logger.info("Training a fish classifier")
 
-    train_set_path = str(project_dir) + "data/processed/training.pt"
+    train_set_path = str(project_dir) + "/data/processed/training.pt"
     train_imgs, train_labels = torch.load(train_set_path)  # img, label
 
     # load data
