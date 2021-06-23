@@ -24,6 +24,7 @@ def train_model(
     epochs=10,
     learning_rate=0.001,
     dropout_p=0.0,
+    batch_size=50,
     seed=0,
     trial=None,
     save_training_results=True,
@@ -74,7 +75,7 @@ def train_model(
 
     # Hyper parameters
     hype = hp().config
-    batch_size = hype["batch_size"]
+    batch_size = batch_size
     lr = learning_rate
     epochs = epochs
 
@@ -232,7 +233,7 @@ def save_results(
     use_azure,
     run,
 ):
-    """ Saves the relevant training images, the model, and the results """
+    """Saves the relevant training images, the model, and the results"""
     # Set file paths depending on running locally or on Azure
     model_path = project_dir.joinpath(trained_model_filepath)
     dict_path = project_dir.joinpath(training_statistics_filepath).joinpath(
