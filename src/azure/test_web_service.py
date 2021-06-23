@@ -21,14 +21,15 @@ def main():
         print(webservice)
 
     # Get the fish classifier web service and its uri
-    webservice = Webservice(ws, "fish-classifier-service")
+    webservice = Webservice(ws, "fish-classifier-service-final")
     endpoint = webservice.scoring_uri
     print(endpoint)
 
     # Test the web service with a single test image
     # Open the image and change color encoding to RGB
     # in case the image is a png
-    img_name = "./data/raw/unzipped/NA_Fish_Dataset/Black Sea Sprat/00015.png"
+    img_name = "./data/raw/unzipped/NA_Fish_Dataset/Shrimp/00049.png"
+    # img_name = "./data/to_test/shrimp.jpg"
     img = Image.open(img_name)
     img = img.convert("RGB")
 

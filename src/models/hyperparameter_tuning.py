@@ -47,11 +47,7 @@ def hyperparameter_tuning_hydra(config):
         direction="maximize",
     )
     study.optimize(
-        lambda trial: optuna_objective(
-            trial,
-            paths=paths,
-            optuna_settings=bounds,
-        ),
+        lambda trial: optuna_objective(trial, paths=paths, optuna_settings=bounds,),
         n_trials=bounds.n_trials,
     )
 
@@ -75,8 +71,7 @@ def hyperparameter_tuning_hydra(config):
     if bounds.use_azure:
         run.log_image(name="Optuna learning curves of the trials", plot=fig)
     fig.savefig(
-        training_figures_filepath + "optuna_accuracy_curve.pdf",
-        bbox_inches="tight",
+        training_figures_filepath + "optuna_accuracy_curve.pdf", bbox_inches="tight",
     )
 
     # Plot hyperparameter importances
@@ -96,9 +91,7 @@ def hyperparameter_tuning_hydra(config):
 
 
 def optuna_objective(
-    trial,
-    paths,
-    optuna_settings,
+    trial, paths, optuna_settings,
 ):
     # Suggest a set of hyperparameters
     learning_rate = trial.suggest_loguniform(
@@ -115,6 +108,7 @@ def optuna_objective(
         optuna_settings.batch_size.max,
         optuna_settings.batch_size.discretization_step,
     )
+    activation = trial.suggest_categorical("activation", optuna_settings.activation)
 
     print(f"Current learning rate: \n {learning_rate}")
     print(f"Current dropout: \n {dropout_p}")
@@ -132,6 +126,7 @@ def optuna_objective(
         seed=optuna_settings.seed,
         trial=trial,
         save_training_results=False,
+        activation=activation,
     )
     return train_val_dict["val_accuracies"][-1]
 

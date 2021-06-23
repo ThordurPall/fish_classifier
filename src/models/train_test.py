@@ -31,6 +31,7 @@ def train_test(config):
         dropout_p=bounds.dropout_p,
         batch_size=bounds.batch_size,
         seed=bounds.seed,
+        activation=bounds.activation,
     )
 
 

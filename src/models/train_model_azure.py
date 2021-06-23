@@ -25,8 +25,8 @@ from azureml.core.conda_dependencies import CondaDependencies
 )
 def main(use_optuna, train_final):
     # Create a Python environment for the experiment
-    # env = Environment("mlops_project")
-    env = Environment("experiment-fish-classifier-final-model")
+    # env = Environment("experiment-fish-classifier-final-model")
+    env = Environment("experiment-fish-classifier-hyperparameter-tuning")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
@@ -102,7 +102,10 @@ def main(use_optuna, train_final):
     )
 
     # Create and submit the experiment
-    experiment = Experiment(workspace=ws, name="experiment-fish-classifier-final-model")
+    # experiment = Experiment(workspace=ws, name="experiment-fish-classifier-final-model")
+    experiment = Experiment(
+        workspace=ws, name="experiment-fish-classifier-hyperparameter-tuning"
+    )
     run = experiment.submit(config=script_config)
 
     # Block until the experiment run has completed
@@ -131,11 +134,10 @@ def main(use_optuna, train_final):
         }
 
         # Verify the files have been downloaded
-        breakpoint()
         model_path = "./outputs/models/trained_model.pth"
         if train_final:
+            # Get the correct path to the model
             model_path = add_train_final_dir()
-        breakpoint()
         run.register_model(
             model_path=model_path,
             model_name="fish-classifier",
@@ -153,14 +155,16 @@ def main(use_optuna, train_final):
 
 
 def add_train_final_dir():
+    # TODO
     model_path = "./outputs/"
     for root, directories, filenames in os.walk(model_path, topdown=True):
-        model_path += directories[0]
+        model_path += directories[-1]
         break
+    model_path += "/"
     for root, directories, filenames in os.walk(model_path, topdown=True):
-        model_path += directories[0]
+        model_path += directories[-1]
         break
-    model_path += "outputs/models/trained_model.pth"
+    model_path += "/outputs/models/trained_model.pth"
     return model_path
 
 
