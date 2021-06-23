@@ -2,16 +2,16 @@ from __future__ import unicode_literals
 
 import json
 import os
-import time
+# import time
 from pathlib import Path
 
 import kornia
 import kornia.augmentation as K
 import matplotlib.pyplot as plt
-import numpy as np
+# import numpy as np
 import torch
 import torchvision.transforms as transforms
-from bottle import Bottle, request, response, route, static_file
+from bottle import Bottle, request  # , response, route, static_file
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -24,7 +24,7 @@ mapping = {}
 with open(mapping_file_path) as json_file:
     mapping = json.load(json_file)
 
-##### Hyper parameters
+# Hyper parameters
 batch_size = 64
 num_classes = len(mapping)
 rgb = 3

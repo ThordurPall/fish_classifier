@@ -94,4 +94,17 @@ target/
 /models/
 # Azure
 config.json
+<<<<<<< HEAD
 azure-downloaded-files/
+=======
+*.png
+azure-downloaded-files
+outputs
+/trained_model.pth
+
+# Reports
+/reports/figures
+
+
+
+>>>>>>> upstream/main

@@ -6,7 +6,6 @@ from azureml.core.model import Model
 
 from src.models.Classifier import Classifier
 from src.models.Hyperparameters import Hyperparameters as hp
-from src.utils.AugmentationPipeline import AugmentationPipeline
 from src.utils.DataTransforms import DataTransforms
 
 
@@ -39,6 +38,8 @@ def init():
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
+        hype["activation"],
+        hype["dropout_p"],
     )
     state_dict = torch.load(model_path, map_location=torch.device(device))
     model.load_state_dict(state_dict)

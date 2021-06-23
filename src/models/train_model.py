@@ -28,6 +28,7 @@ def train_model(
     batch_size=250,
     seed=0,
     trial=None,
+    save_training_results=True,
 ):
 
     # Check if there is a GPU available to use
@@ -36,10 +37,10 @@ def train_model(
     else:
         print("The code will run on CPU.")
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+    seed = 0
     # Set the seed for reproducibility
-    torch.manual_seed(0)
-    np.random.seed(0)
+    torch.manual_seed(seed)
+    np.random.seed(seed)
 
     project_dir = Path(__file__).resolve().parents[2]
 
@@ -58,6 +59,7 @@ def train_model(
         run = Run.get_context()
         run.log("Learning rate", learning_rate)
         run.log("Epochs", epochs)
+        run.log("Dropout", dropout_p)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -79,7 +81,7 @@ def train_model(
 
     # Hyper parameters
     hype = hp().config
-    batch_size = hype["batch_size"]
+    batch_size = batch_size
     lr = learning_rate
     epochs = epochs
 
@@ -113,7 +115,7 @@ def train_model(
         hype["fc_1"],
         hype["fc_2"],
         hype["activation"],
-        dropout_p=dropout_p,
+        dropout_p,
     )
     model = model.to(device)
 
@@ -199,6 +201,44 @@ def train_model(
             if trial.should_prune():
                 raise optuna.TrialPruned()
 
+    # Save the training and validation losses and accuracies as a dictionary
+    train_val_dict = {
+        "train_losses": train_losses,
+        "train_accuracies": train_accuracies,
+        "val_losses": val_losses,
+        "val_accuracies": val_accuracies,
+    }
+
+    if save_training_results:
+        save_results(
+            project_dir,
+            trained_model_filepath,
+            training_statistics_filepath,
+            training_figures_filepath,
+            model,
+            train_val_dict,
+            use_azure,
+            run,
+        )
+
+    if use_azure and not trial:
+        # Complete the run
+        run.complete()
+        print("Completed running the training expriment")
+    return train_val_dict
+
+
+def save_results(
+    project_dir,
+    trained_model_filepath,
+    training_statistics_filepath,
+    training_figures_filepath,
+    model,
+    train_val_dict,
+    use_azure,
+    run,
+):
+    """Saves the relevant training images, the model, and the results"""
     # Set file paths depending on running locally or on Azure
     model_path = project_dir.joinpath(trained_model_filepath)
     dict_path = project_dir.joinpath(training_statistics_filepath).joinpath(
@@ -230,21 +270,13 @@ def train_model(
         a_fig_path = figures_path + "Training_Accuracy.pdf"
 
         # Log the training and validation losses and accuracies
-        run.log_list("Train loss", train_losses)
-        run.log_list("Train accuracy", train_accuracies)
-        run.log_list("Validation loss", val_losses)
-        run.log_list("Validation accuracy", val_accuracies)
+        run.log_list("Train loss", train_val_dict["train_losses"])
+        run.log_list("Train accuracy", train_val_dict["train_accuracies"])
+        run.log_list("Validation loss", train_val_dict["val_losses"])
+        run.log_list("Validation accuracy", train_val_dict["val_accuracies"])
 
     # Save the trained network
     torch.save(model.state_dict(), model_path)
-
-    # Save the training and validation losses and accuracies as a dictionary
-    train_val_dict = {
-        "train_losses": train_losses,
-        "train_accuracies": train_accuracies,
-        "val_losses": val_losses,
-        "val_accuracies": val_accuracies,
-    }
 
     with open(dict_path, "wb") as f:
         # Pickle the 'train_val_dict' dictionary using
@@ -253,8 +285,8 @@ def train_model(
 
     # Plot the training loss curve
     f = plt.figure(figsize=(12, 8))
-    plt.plot(train_losses, label="Training loss")
-    plt.plot(val_losses, label="Validation loss")
+    plt.plot(train_val_dict["train_losses"], label="Training loss")
+    plt.plot(train_val_dict["val_losses"], label="Validation loss")
     plt.xlabel("Epoch number")
     plt.ylabel("Loss")
     plt.legend()
@@ -264,18 +296,11 @@ def train_model(
 
     # Plot the training accuracy curve
     f = plt.figure(figsize=(12, 8))
-    plt.plot(train_accuracies, label="Training accuracy")
-    plt.plot(val_accuracies, label="Validation accuracy")
+    plt.plot(train_val_dict["train_accuracies"], label="Training accuracy")
+    plt.plot(train_val_dict["val_accuracies"], label="Validation accuracy")
     plt.xlabel("Epoch number")
     plt.ylabel("Accuracy")
     plt.legend()
     if use_azure:
         run.log_image(name="Training accuracy curve", plot=f)
     f.savefig(a_fig_path, bbox_inches="tight")
-
-    if use_azure:
-        # Complete the run
-        run.complete()
-        print("Completed running the training expriment")
-
-    return train_val_dict
