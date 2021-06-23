@@ -36,9 +36,11 @@ def main():
             "kornia",
             "gdown",
             "pillow",
+            "optuna",
+            "hydra"
         ],
     )
-    whl_path = "./dist/src-0.1.14-py3-none-any.whl"
+    whl_path = "./dist/src-0.1.21-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
@@ -56,8 +58,8 @@ def main():
 
     # Create a script config for training
     experiment_folder = "./src/models"
-    e = 30
-    lr = 0.001
+    e = 50
+    lr = 0.00038434
     script_args = ["--epochs", e, "--learning_rate", lr, "--use_azure", True]
     script_config = ScriptRunConfig(
         source_directory=experiment_folder,

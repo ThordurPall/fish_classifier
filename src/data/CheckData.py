@@ -15,10 +15,12 @@ def check_data():
 
     with open(mapping_file_path) as json_file:
         mapping = json.load(json_file)
-    print(mapping)
+    print("All fish types: ", mapping)
 
     randomInt = random.randint(0, train_imgs.shape[0] - 1)
-    print(train_labels[randomInt])
+
+    print("length of dataset: ", len(train_imgs))
+    print("Showing fish: ", mapping[str(int(train_labels[randomInt].item()))])
     plt.imshow(
         kornia.utils.tensor_to_image(
             train_imgs[randomInt]

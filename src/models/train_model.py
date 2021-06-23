@@ -10,6 +10,7 @@ import torch
 from azureml.core import Run
 from torch import nn, optim
 from torch.utils.data import random_split
+import gdown
 
 # from src.data.MakeDataset import MakeDataset
 from src.models.Classifier import Classifier
@@ -23,8 +24,8 @@ def train_model(
     use_azure=False,
     epochs=1,
     learning_rate=0.001,
-    dropout_p=0.25,
-    batch_size=64,
+    dropout_p=0.021,
+    batch_size=250,
     seed=0,
     trial=None,
 ):
@@ -40,9 +41,16 @@ def train_model(
     torch.manual_seed(0)
     np.random.seed(0)
 
+    project_dir = Path(__file__).resolve().parents[2]
+
     if use_azure:
-        # make_data = MakeDataset()
-        # make_data.make_dataset()
+        pathForData = str(project_dir) + "data/processed/"
+
+        gdown.download(
+            "https://drive.google.com/uc?id=1c_3EFqYiO4VhF4SRfJorsY577PbmHnSy",
+            pathForData,
+            quiet=False,
+        )
         print("Dataset created")
 
         # Get the experiment run context. That is, retrieve the experiment
@@ -56,8 +64,7 @@ def train_model(
     logger = logging.getLogger(__name__)
     logger.info("Training a fish classifier")
 
-    project_dir = Path(__file__).resolve().parents[2]
-    train_set_path = str(project_dir) + "/data/processed/training.pt"
+    train_set_path = str(project_dir) + "data/processed/training.pt"
     train_imgs, train_labels = torch.load(train_set_path)  # img, label
 
     # load data
