@@ -12,7 +12,7 @@ from src.models.Hyperparameters import Hyperparameters as hp
 def evaluate_model(
     trained_model_filepath="models/trained_model.pth", batch_size=64, num_workers=0
 ):
-    """ Evaluates the trained network using test subset of the fish dataset """
+    """Evaluates the trained network using test subset of the fish dataset"""
     logger = logging.getLogger(__name__)
     logger.info("Evaluating a trained network using a test subset")
 
@@ -40,6 +40,7 @@ def evaluate_model(
         hype["fc_1"],
         hype["fc_2"],
         hype["activation"],
+        hype["dropout_p"],
     )
     project_dir = Path(__file__).resolve().parents[2]
     state_dict = torch.load(

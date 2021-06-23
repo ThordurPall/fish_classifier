@@ -82,6 +82,7 @@ def objective(trial):
         hype["fc_1"],
         hype["fc_2"],
         ACTIVATION,
+        hype["dropout_p"],
     )
     model = model.to(device)
 
