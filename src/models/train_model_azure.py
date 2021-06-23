@@ -139,17 +139,6 @@ def main(use_optuna, train_final):
             properties=model_props,
         )
 
-        # List registered models
-        for model in Model.list(ws):
-            print(model.name, "version:", model.version)
-            for tag_name in model.tags:
-                tag = model.tags[tag_name]
-                print("\t", tag_name, ":", tag)
-            for prop_name in model.properties:
-                prop = model.properties[prop_name]
-                print("\t", prop_name, ":", prop)
-            print("\n")
-
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"
     run.download_files(prefix="outputs", output_directory=download_folder)
