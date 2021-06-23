@@ -3,8 +3,13 @@ import glob
 import os.path
 
 import click
-from azureml.core import (ComputeTarget, Environment, Experiment,
-                          ScriptRunConfig, Workspace)
+from azureml.core import (
+    ComputeTarget,
+    Environment,
+    Experiment,
+    ScriptRunConfig,
+    Workspace,
+)
 from azureml.core.conda_dependencies import CondaDependencies
 
 
@@ -125,20 +130,32 @@ def main(use_optuna, train_final):
 
         # Register the model
         model_props = {
-            "epochs": e,
-            "learning_rate": lr,
             "Final train loss": metrics["Train loss"][-1],
             "Final train accuracy": metrics["Train accuracy"][-1],
             "Final validation loss": metrics["Validation loss"][-1],
             "Final validation accuracy": metrics["Validation accuracy"][-1],
         }
+
+        breakpoint()
+        # Verify the files have been downloaded
+        model_path = "./outputs/models/trained_model.pth"
+        if train_final:
+            model_path = "./outputs/"
+            for root, directories, filenames in os.walk(model_path, topdown=True):
+                model_path += directories[0]
+                break
+            for root, directories, filenames in os.walk(model_path, topdown=True):
+                model_path += directories[0]
+                break
+            model_path += "outputs/models/trained_model.pth"
+        breakpoint()
         run.register_model(
-            model_path="./outputs/models/trained_model.pth",
+            model_path=model_path,
             model_name="fish-classifier",
             tags={"Training data": "fish-classifier"},
             properties=model_props,
         )
-
+        breakpoint()
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"
     run.download_files(prefix="outputs", output_directory=download_folder)

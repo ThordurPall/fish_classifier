@@ -3,8 +3,11 @@ import logging
 
 import click
 
-from src.visualization.visualize import (plot_class_distributions,
-                                         plot_tsne_test_set)
+from src.visualization.visualize import (
+    drift_detection,
+    plot_class_distributions,
+    plot_tsne_test_set,
+)
 
 
 @click.command()
@@ -24,9 +27,17 @@ def main(
     test_data_filepath,
     figures_folderpath,
 ):
-    plot_tsne_test_set(trained_model_filepath, test_data_filepath, figures_folderpath)
-    plot_class_distributions(
-        training_data_filepath, test_data_filepath, figures_folderpath
+    # plot_tsne_test_set(trained_model_filepath, test_data_filepath, figures_folderpath)
+    # plot_class_distributions(
+    #    training_data_filepath, test_data_filepath, figures_folderpath
+    # )
+    drift_detection(
+        training_data_filepath,
+        test_data_filepath,
+        trained_model_filepath,
+        figures_folderpath,
+        plot_examples=False,
+        detector_num_batches=50,
     )
 
 
