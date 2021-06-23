@@ -47,7 +47,7 @@ def main(use_optuna):
             "sklearn",
         ],
     )
-    whl_path = "./dist/src-0.1.31-py3-none-any.whl"
+    whl_path = "./dist/src-0.1.33-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
