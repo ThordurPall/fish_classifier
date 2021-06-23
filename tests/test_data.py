@@ -10,7 +10,7 @@ class TestData:
         """
         Test that downloading the dataset from Google Drive works as expected
         """
-        make_data = MakeDataset()
+        make_data = MakeDataset(generated_images_per_image=1)
         make_data.download_data(True)
 
         # Test that the data has been downloaded

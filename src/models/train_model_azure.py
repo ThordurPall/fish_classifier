@@ -27,6 +27,7 @@ def main(use_optuna, train_final):
     print(train_final)
 
     # Create a Python environment for the experiment
+    # env = Environment("mlops_project")
     env = Environment("experiment-fish-classifier-final-model")
 
     # Load the workspace from the saved config file
@@ -34,9 +35,14 @@ def main(use_optuna, train_final):
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "MLOpsGPU")
+    compute_target = ComputeTarget(ws, "agicksgpu")
     print("Ready to use compute target: {}".format(compute_target.name))
 
+    print("Downloading training set")
+    # dataset = Dataset.get_by_name(ws, name='fish_classifier_training_set')
+    # dataset.download(target_path='./data/processed/', overwrite=False)
+
+    print("Finished downloading training set")
     # Ensure the required packages are installed
     packages = CondaDependencies.create(
         conda_packages=["pip"],
@@ -51,6 +57,7 @@ def main(use_optuna, train_final):
             "gdown",
             "pillow",
             "optuna",
+            "hydra"
             "hydra-core",
             "sklearn",
         ],
@@ -80,8 +87,8 @@ def main(use_optuna, train_final):
         script = "train_test.py"
     else:
         script = "train_model_command_line.py"
-        e = 30
-        lr = 0.001
+        e = 50
+        lr = 0.00038434
         dropout_p = 0.0
         script_args = [
             "--epochs",
