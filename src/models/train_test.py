@@ -5,7 +5,6 @@ from pathlib import Path
 import hydra
 from omegaconf import OmegaConf
 
-from src.models.evaluate_model import evaluate_model
 from src.models.train_model import train_model
 
 project_dir = Path(__file__).resolve().parents[2]
@@ -32,16 +31,8 @@ def train_test(config):
         dropout_p=bounds.dropout_p,
         batch_size=bounds.batch_size,
         seed=bounds.seed,
+        activation=bounds.activation,
     )
-
-    # Evaluate the final model
-    model_path = project_dir.joinpath(paths.trained_model_filepath)
-    if bounds.use_azure:
-        model_path = "./outputs/" + paths.trained_model_filepath
-    test_accuracy = evaluate_model(
-        trained_model_filepath=model_path, batch_size=bounds.batch_size
-    )
-    log.info(f"Final test accuracy: {test_accuracy}")
 
 
 if __name__ == "__main__":

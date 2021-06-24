@@ -29,6 +29,7 @@ def train_model(
     seed=0,
     trial=None,
     save_training_results=True,
+    activation="leaky_relu",
 ):
 
     # Check if there is a GPU available to use
@@ -61,6 +62,8 @@ def train_model(
         run.log("Learning rate", learning_rate)
         run.log("Epochs", epochs)
         run.log("Dropout", dropout_p)
+        run.log("Batch size", batch_size)
+        run.log("Activation", activation)
 
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
@@ -115,7 +118,7 @@ def train_model(
         hype["pool"],
         hype["fc_1"],
         hype["fc_2"],
-        hype["activation"],
+        activation,
         dropout_p,
     )
     model = model.to(device)

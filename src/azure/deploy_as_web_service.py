@@ -13,7 +13,7 @@ def main():
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Get the latest fish classifier model
-    model = Model(ws, name="fish-classifier-test")
+    model = Model(ws, name="fish-classifier")
     print(model)
 
     # Set path for scoring script
@@ -32,7 +32,7 @@ def main():
             "numpy",
         ],
     )
-    whl_path = "./dist/src-0.1.14-py3-none-any.whl"
+    whl_path = "./dist/src-0.1.37-py3-none-any.whl"
     whl_url = Environment.add_private_pip_wheel(
         workspace=ws, exist_ok=True, file_path=whl_path
     )
@@ -51,7 +51,7 @@ def main():
 
     # Finally, deploy it as a web service
     deployment_config = AciWebservice.deploy_configuration(cpu_cores=1, memory_gb=1)
-    service_name = "fish-classifier-service"
+    service_name = "fish-classifier-service-final"
     service = Model.deploy(
         ws, service_name, [model], inference_config, deployment_config
     )

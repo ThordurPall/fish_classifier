@@ -24,25 +24,18 @@ from azureml.core.conda_dependencies import CondaDependencies
     help="Set to True to trian the final model (default is False)",
 )
 def main(use_optuna, train_final):
-    print(train_final)
-
     # Create a Python environment for the experiment
-    # env = Environment("mlops_project")
-    env = Environment("experiment-fish-classifier-final-model")
+    # env = Environment("experiment-fish-classifier-final-model")
+    env = Environment("experiment-fish-classifier-hyperparameter-tuning")
 
     # Load the workspace from the saved config file
     ws = Workspace.from_config()
     print("Ready to use Azure ML to work with {}".format(ws.name))
 
     # Set the compute target
-    compute_target = ComputeTarget(ws, "agicksgpu")
+    compute_target = ComputeTarget(ws, "MLOpsGPU")
     print("Ready to use compute target: {}".format(compute_target.name))
 
-    print("Downloading training set")
-    # dataset = Dataset.get_by_name(ws, name='fish_classifier_training_set')
-    # dataset.download(target_path='./data/processed/', overwrite=False)
-
-    print("Finished downloading training set")
     # Ensure the required packages are installed
     packages = CondaDependencies.create(
         conda_packages=["pip"],
@@ -57,7 +50,6 @@ def main(use_optuna, train_final):
             "gdown",
             "pillow",
             "optuna",
-            "hydra"
             "hydra-core",
             "sklearn",
         ],
@@ -110,7 +102,10 @@ def main(use_optuna, train_final):
     )
 
     # Create and submit the experiment
-    experiment = Experiment(workspace=ws, name="experiment-fish-classifier-final-model")
+    # experiment = Experiment(workspace=ws, name="experiment-fish-classifier-final-model")
+    experiment = Experiment(
+        workspace=ws, name="experiment-fish-classifier-hyperparameter-tuning"
+    )
     run = experiment.submit(config=script_config)
 
     # Block until the experiment run has completed
@@ -132,20 +127,23 @@ def main(use_optuna, train_final):
 
         # Register the model
         model_props = {
-            "epochs": e,
-            "learning_rate": lr,
             "Final train loss": metrics["Train loss"][-1],
             "Final train accuracy": metrics["Train accuracy"][-1],
             "Final validation loss": metrics["Validation loss"][-1],
             "Final validation accuracy": metrics["Validation accuracy"][-1],
         }
+
+        # Verify the files have been downloaded
+        model_path = "./outputs/models/trained_model.pth"
+        if train_final:
+            # Get the correct path to the model
+            model_path = add_train_final_dir()
         run.register_model(
-            model_path="./outputs/models/trained_model.pth",
+            model_path=model_path,
             model_name="fish-classifier",
             tags={"Training data": "fish-classifier"},
             properties=model_props,
         )
-
     # Download files in the "outputs" folder and store locally
     download_folder = "azure-downloaded-files"
     run.download_files(prefix="outputs", output_directory=download_folder)
@@ -154,6 +152,20 @@ def main(use_optuna, train_final):
     for root, directories, filenames in os.walk(download_folder):
         for filename in filenames:
             print(os.path.join(root, filename))
+
+
+def add_train_final_dir():
+    # TODO
+    model_path = "./outputs/"
+    for root, directories, filenames in os.walk(model_path, topdown=True):
+        model_path += directories[-1]
+        break
+    model_path += "/"
+    for root, directories, filenames in os.walk(model_path, topdown=True):
+        model_path += directories[-1]
+        break
+    model_path += "/outputs/models/trained_model.pth"
+    return model_path
 
 
 if __name__ == "__main__":
